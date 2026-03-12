@@ -382,7 +382,7 @@ useEffect(() => {
             </div>
 
          <div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
-  <Moon size={24} />
+  <Moon size={25} />
 </div>
           </section>
         )}
