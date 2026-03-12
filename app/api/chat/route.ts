@@ -1,6 +1,16 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
+import {
+  isValidThema,
+  MAX_HELD_LENGTH,
+  MAX_NAME_LENGTH
+} from "../../lib/story-config";
+
+import type {
+  StoryRequest,
+  StoryResponse
+} from "../../lib/story-config";
 export const runtime = "nodejs";
 
 const openai = new OpenAI({
