@@ -49,27 +49,30 @@ export default function StoryGenerator() {
   }, [trimmedName, trimmedHeld]);
 
   const isFormValid = validationError === "";
-  useEffect(() => {
+useEffect(() => {
   if (!story) {
     setDisplayedStory("");
+    setIsWriting(false);
     return;
   }
 
   let index = 0;
   setDisplayedStory("");
+  setIsWriting(true);
 
   const interval = setInterval(() => {
-    index += 1;
+    index++;
+
     setDisplayedStory(story.slice(0, index));
 
     if (index >= story.length) {
       clearInterval(interval);
+      setIsWriting(false);
     }
   }, 18);
 
   return () => clearInterval(interval);
 }, [story]);
-
   const applyPromptExample = (example: PromptExample) => {
     if (loading) return;
 
