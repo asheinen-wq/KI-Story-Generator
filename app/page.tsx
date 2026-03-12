@@ -381,9 +381,9 @@ useEffect(() => {
               </button>
             </div>
 
-            <div className="story-moon">
-              <Moon size={24} />
-            </div>
+         <div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
+  <Moon size={24} />
+</div>
           </section>
         )}
       </div>
