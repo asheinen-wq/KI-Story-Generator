@@ -185,7 +185,12 @@ useEffect(() => {
 
   return (
 <main className={`container ${isWriting ? "writing" : ""}`}>
-  <div className="starfield"></div>
+  <div className="starfield" aria-hidden="true">
+    <div className="stars stars-layer-1"></div>
+    <div className="stars stars-layer-2"></div>
+    <div className="stars stars-layer-3"></div>
+  </div>
+  
       <div className="shooting-star star-1" aria-hidden="true" />
       <div className="shooting-star star-2" aria-hidden="true" />
       <div className="shooting-star star-3" aria-hidden="true" />
