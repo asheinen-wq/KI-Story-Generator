@@ -7,150 +7,74 @@ import {
   MAX_NAME_LENGTH,
 } from "../../lib/story-config";
 
-import type {
-  StoryRequest,
-  StoryResponse,
-} from "../../lib/story-config";
+import type { StoryRequest, StoryResponse } from "../../lib/story-config";
 
 export const runtime = "nodejs";
 
-const apiKey = process.env.OPENAI_API_KEY;
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+});
 
-const openai = apiKey
-  ? new OpenAI({ apiKey })
-  : null;
-
-function buildPrompt({ name, held, thema }: StoryRequest): string {
+function buildPrompt({ name, held, thema }: StoryRequest) {
   return `
-Schreibe eine liebevolle, kindgerechte Gute-Nacht-Geschichte.
+Schreibe eine liebevolle Gute-Nacht-Geschichte für ein Kind.
 
-Vorgaben:
-- Name des Kindes: ${name}
-- Held oder Begleiter: ${held}
-- Thema: ${thema}
-- Länge: 3 bis 4 kurze Absätze
-- Stil: warm, magisch, bildhaft, leicht verständlich
-- Zielgruppe: Kinder im Vorlesealter
-- Ende: beruhigend, freundlich und schön
+Name: ${name}
+Held: ${held}
+Thema: ${thema}
 
-Wichtig:
-- Verwende eine einfache Sprache.
-- Die Geschichte soll positiv und kreativ sein.
-- Die Geschichte darf nicht gruselig oder überfordernd sein.
-- Gib nur die Geschichte aus, ohne Einleitung oder Erklärungen.
+3–4 kurze Absätze. Einfach, warm und positiv.
 `.trim();
 }
 
-function validateInput(body: Partial<StoryRequest>) {
-  const name = body.name?.trim() ?? "";
-  const held = body.held?.trim() ?? "";
-  const thema = body.thema?.trim() ?? "";
-
-  if (!name || !held || !thema) {
-    return {
-      ok: false as const,
-      error: "Bitte fülle alle Felder vollständig aus.",
-      status: 400,
-    };
-  }
-
-  if (name.length > MAX_NAME_LENGTH) {
-    return {
-      ok: false as const,
-      error: `Der Name darf maximal ${MAX_NAME_LENGTH} Zeichen lang sein.`,
-      status: 400,
-    };
-  }
-
-  if (held.length > MAX_HELD_LENGTH) {
-    return {
-      ok: false as const,
-      error: `Der Held oder Begleiter darf maximal ${MAX_HELD_LENGTH} Zeichen lang sein.`,
-      status: 400,
-    };
-  }
-
-  if (!isValidThema(thema)) {
-    return {
-      ok: false as const,
-      error: "Das gewählte Thema ist ungültig.",
-      status: 400,
-    };
-  }
-
-  return {
-    ok: true as const,
-    data: {
-      name,
-      held,
-      thema,
-    },
-  };
-}
-
 export async function POST(req: Request) {
-  if (!openai) {
-    return NextResponse.json<StoryResponse>(
-      { error: "Der Server ist nicht korrekt konfiguriert." },
-      { status: 500 }
-    );
-  }
-
-  let body: Partial<StoryRequest>;
-
   try {
-    body = (await req.json()) as Partial<StoryRequest>;
-  } catch {
-    return NextResponse.json<StoryResponse>(
-      { error: "Ungültige Anfrage." },
-      { status: 400 }
-    );
-  }
+    const body = (await req.json()) as StoryRequest;
 
-  const validated = validateInput(body);
+    if (!body.name || !body.held || !body.thema) {
+      return NextResponse.json<StoryResponse>(
+        { error: "Ungültige Eingabe." },
+        { status: 400 }
+      );
+    }
 
-  if (!validated.ok) {
-    return NextResponse.json<StoryResponse>(
-      { error: validated.error },
-      { status: validated.status }
-    );
-  }
-
-  try {
-    const prompt = buildPrompt(validated.data);
+    if (
+      body.name.length > MAX_NAME_LENGTH ||
+      body.held.length > MAX_HELD_LENGTH ||
+      !isValidThema(body.thema)
+    ) {
+      return NextResponse.json<StoryResponse>(
+        { error: "Ungültige Eingabedaten." },
+        { status: 400 }
+      );
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       temperature: 0.8,
-      max_tokens: 500,
       messages: [
         {
           role: "system",
           content:
-            "Du bist ein liebevoller Kinderbuchautor. Du schreibst magische, ruhige, kindgerechte Gute-Nacht-Geschichten mit einem positiven Ende.",
+            "Du bist ein liebevoller Kinderbuchautor für Gute-Nacht-Geschichten.",
         },
         {
           role: "user",
-          content: prompt,
+          content: buildPrompt(body),
         },
       ],
     });
 
-    const text = response.choices[0]?.message?.content?.trim() ?? "";
+    const text = response.choices[0]?.message?.content?.trim();
 
-    if (!text) {
-      return NextResponse.json<StoryResponse>(
-        { error: "Es konnte keine Geschichte erzeugt werden." },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json<StoryResponse>({ text });
-  } catch (error) {
-    console.error("API Error:", error);
+    return NextResponse.json<StoryResponse>({
+      text: text || "",
+    });
+  } catch (err) {
+    console.error(err);
 
     return NextResponse.json<StoryResponse>(
-      { error: "Fehler bei der Geschichten-Zauberei." },
+      { error: "Serverfehler bei der Geschichten-Zauberei." },
       { status: 500 }
     );
   }
