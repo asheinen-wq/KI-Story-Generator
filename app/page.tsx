@@ -6,14 +6,15 @@ import {
   MAX_HELD_LENGTH,
   MAX_NAME_LENGTH,
   PROMPT_EXAMPLES,
-  THEMEN,
-} from "@/lib/story-config";
+  THEMEN
+} from "./lib/story-config";
+
 import type {
   PromptExample,
   StoryRequest,
   StoryResponse,
-  Thema,
-} from "@/lib/story-config";
+  Thema
+} from "./lib/story-config";
 
 export default function StoryGenerator() {
   const [name, setName] = useState("");
