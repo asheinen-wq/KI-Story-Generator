@@ -7,33 +7,7 @@ import {
   MAX_NAME_LENGTH
 } from "../../lib/story-config";
 
-import type {
-  StoryRequest,
-  StoryResponse
-} from "../../lib/story-config";
-export const runtime = "nodejs";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const THEMEN = [
-  "Freundschaft",
-  "Mut & Tapferkeit",
-  "Weltraum-Abenteuer",
-  "Unterwasserwelt",
-  "Einhorn-Magie",
-] as const;
-
-type Thema = (typeof THEMEN)[number];
-
-type StoryRequest = {
-  name: string;
-  held: string;
-  thema: Thema;
-};
-
-type StoryResponse = {
   text?: string;
   error?: string;
 };
