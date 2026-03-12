@@ -3,162 +3,91 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0e17; /* Sehr tiefes Blau für die Nacht */
-  --foreground: #f0f9ff; /* Fast Weiß für Text */
-  --primary: #c084fc; /* Magisches Lila für Buttons/Icons */
+  --background: #020617; /* Extrem dunkles Nacht-Blau */
+  --foreground: #f0f9ff;
+  --primary: #c084fc;
   --primary-hover: #a855f7;
-  --card-bg: #111827; /* Etwas helleres Grau für die Karte */
-  --border-color: #374151; /* Subtile Randfarbe */
+  --card-bg: rgba(17, 24, 39, 0.85); /* Etwas transparent für den Glas-Effekt */
+  --border-color: rgba(192, 132, 252, 0.3);
 }
 
 @layer base {
   body {
-    background: linear-gradient(135deg, var(--background) 0%, #111827 100%);
+    background: var(--background);
     color: var(--foreground);
     min-height: 100vh;
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+    font-family: sans-serif;
+    /* Ein sanfter blauer Nebel im Hintergrund */
+    background: radial-gradient(circle at bottom, #1e1b4b 0%, #020617 80%);
   }
 }
 
-/* Magischer Card-Effekt */
+/* --- DER MAGISCHE WALD --- */
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 250px;
+  background-image: url('https://www.transparenttextures.com/patterns/forest.png'); /* Ein Wald-Muster */
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-size: contain;
+  opacity: 0.4;
+  z-index: -1;
+  filter: brightness(0.2) drop-shadow(0 0 10px #000);
+}
+
+/* --- STERNSCHNUPPEN ANIMATION --- */
+.shooting-star {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  height: 2px;
+  background: linear-gradient(-45deg, #fff, rgba(0, 0, 255, 0));
+  border-radius: 999px;
+  filter: drop-shadow(0 0 6px #fff);
+  animation: tail 3000ms ease-in-out infinite, shooting 3000ms ease-in-out infinite;
+  z-index: -2;
+}
+
+@keyframes tail {
+  0% { width: 0; }
+  30% { width: 100px; }
+  100% { width: 0; }
+}
+
+@keyframes shooting {
+  0% { transform: translateX(0) translateY(0) rotate(45deg); }
+  100% { transform: translateX(-800px) translateY(800px) rotate(45deg); }
+}
+
+/* Mehrere Sternschnuppen mit Verspätung */
+.shooting-star:nth-child(1) { top: 10%; left: 90%; animation-delay: 0s; }
+.shooting-star:nth-child(2) { top: 30%; left: 80%; animation-delay: 1.5s; }
+.shooting-star:nth-child(3) { top: 5%; left: 60%; animation-delay: 4s; }
+
+/* --- DIE KARTE (GLAS-EFFEKT) --- */
 .magic-card {
-  background-color: var(--card-bg);
+  background: var(--card-bg);
+  backdrop-filter: blur(10px); /* Macht den Hintergrund hinter der Karte verschwommen */
   border: 1px solid var(--border-color);
-  border-radius: 1rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2), 0 0 15px rgba(192, 132, 252, 0.1); /* Subtiler Lila-Glow */
-  padding: 2rem;
-  width: 100%;
-  max-width: 48rem; /* max-w-3xl */
-  margin: 2rem auto;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 30px rgba(192, 132, 252, 0.2);
+  padding: 2.5rem;
+  width: 90%;
+  max-width: 600px;
+  margin: 4rem auto;
+  position: relative;
+  z-index: 10;
 }
 
-/* Styling für Titel und Untertitel */
-h1 {
-  font-size: 2.5rem; /* text-4xl */
-  font-weight: 800; /* font-extrabold */
-  background: linear-gradient(to right, #ffffff, var(--primary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 0.5rem;
-}
-
-h1 + p {
-  color: #94a3b8; /* text-slate-400 */
-  margin-bottom: 2rem;
-}
-
-/* Eingabefelder (Inputs) */
-input[type="text"] {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  margin-top: 0.25rem;
-  background-color: #1f2937; /* Hellgrau für Felder */
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  color: var(--foreground);
-  font-size: 1rem;
-  transition: all 0.2s;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.2);
-}
-
-/* Dropdown-Feld (Select) */
-select {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  margin-top: 0.25rem;
-  background-color: #1f2937;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  color: var(--foreground);
-  font-size: 1rem;
-  appearance: none; /* Entfernt Standard-Pfeil */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23f0f9ff'%3%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1.25rem;
-  transition: all 0.2s;
-}
-
-select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.2);
-}
-
-/* Labels */
-label {
-  display: block;
-  font-weight: 500;
-  color: var(--foreground);
-  margin-bottom: 1rem;
-}
-
-/* Der Zauber-Button */
-button {
-  width: 100%;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-button:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Lade-Zustand (Pulsieren) */
-button.loading {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .5; }
-}
-
-/* Der Bereich für die generierte Geschichte */
-.story-area {
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.story-area > p {
-  color: #e2e8f0; /* text-slate-200 */
-  line-height: 1.8; /* spacing für gute Lesbarkeit */
-  font-size: 1.125rem; /* text-lg */
-  margin-bottom: 1.5rem;
-}
-
-/* Layout-Klasse */
-.container {
-  max-width: 48rem; /* max-w-3xl */
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem; /* space-y-6 */
-}
+/* Restliches Styling für Formular-Elemente */
+h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #fff, #c084fc); -webkit-background-clip: text; color: transparent; text-align: center; }
+input, select { width: 100%; padding: 0.75rem; margin: 0.5rem 0 1.5rem; background: #1f2937; border: 1px solid #374151; border-radius: 0.5rem; color: white; }
+button { width: 100%; padding: 1rem; background: linear-gradient(135deg, #c084fc, #a855f7); border: none; border-radius: 0.5rem; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+button:disabled { opacity: 0.5; }
+.story-area { margin-top: 2rem; line-height: 1.8; color: #e2e8f0; border-top: 1px dotted #374151; padding-top: 1.5rem; }
