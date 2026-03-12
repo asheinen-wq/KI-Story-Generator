@@ -2,64 +2,15 @@
 
 import React, { FormEvent, useMemo, useState } from "react";
 import { Sparkles, Star, Moon, Copy, Check, RefreshCw } from "lucide-react";
-
-const THEMEN = [
-  "Freundschaft",
-  "Mut & Tapferkeit",
-  "Weltraum-Abenteuer",
-  "Unterwasserwelt",
-  "Einhorn-Magie",
-] as const;
-
-type Thema = (typeof THEMEN)[number];
-
-type StoryRequest = {
-  name: string;
-  held: string;
-  thema: Thema;
-};
-
-type StoryResponse = {
-  text?: string;
-  error?: string;
-};
-
-type PromptExample = {
-  label: string;
-  name: string;
-  held: string;
-  thema: Thema;
-};
-
-const PROMPT_EXAMPLES: PromptExample[] = [
-  {
-    label: "Mutiger Drache",
-    name: "Leo",
-    held: "ein kleiner Drache namens Funki",
-    thema: "Mut & Tapferkeit",
-  },
-  {
-    label: "Freundschaft im Wald",
-    name: "Mila",
-    held: "ein schlauer Fuchs namens Lumi",
-    thema: "Freundschaft",
-  },
-  {
-    label: "Weltraumreise",
-    name: "Noah",
-    held: "ein Roboter namens Zapp",
-    thema: "Weltraum-Abenteuer",
-  },
-  {
-    label: "Zauber der Meere",
-    name: "Lina",
-    held: "eine mutige Meerjungfrau namens Neri",
-    thema: "Unterwasserwelt",
-  },
-];
-
-const MAX_NAME_LENGTH = 40;
-const MAX_HELD_LENGTH = 80;
+import {
+  MAX_HELD_LENGTH,
+  MAX_NAME_LENGTH,
+  PROMPT_EXAMPLES,
+  StoryRequest,
+  StoryResponse,
+  THEMEN,
+  Thema,
+} from "@/lib/story-config";
 
 export default function StoryGenerator() {
   const [name, setName] = useState("");
@@ -91,7 +42,7 @@ export default function StoryGenerator() {
 
   const isFormValid = validationError === "";
 
-  const applyPromptExample = (example: PromptExample) => {
+  const applyPromptExample = (example: (typeof PROMPT_EXAMPLES)[number]) => {
     if (loading) return;
 
     setName(example.name);
