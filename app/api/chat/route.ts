@@ -14,9 +14,12 @@ import type {
 
 export const runtime = "nodejs";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const apiKey = process.env.OPENAI_API_KEY;
+
+const openai = apiKey
+  ? new OpenAI({ apiKey })
+  : null;
+
 function buildPrompt({ name, held, thema }: StoryRequest): string {
   return `
 Schreibe eine liebevolle, kindgerechte Gute-Nacht-Geschichte.
@@ -35,7 +38,7 @@ Wichtig:
 - Die Geschichte soll positiv und kreativ sein.
 - Die Geschichte darf nicht gruselig oder überfordernd sein.
 - Gib nur die Geschichte aus, ohne Einleitung oder Erklärungen.
-  `.trim();
+`.trim();
 }
 
 function validateInput(body: Partial<StoryRequest>) {
@@ -86,17 +89,34 @@ function validateInput(body: Partial<StoryRequest>) {
 }
 
 export async function POST(req: Request) {
+  if (!openai) {
+    return NextResponse.json<StoryResponse>(
+      { error: "Der Server ist nicht korrekt konfiguriert." },
+      { status: 500 }
+    );
+  }
+
+  let body: Partial<StoryRequest>;
+
   try {
-    const body = (await req.json()) as Partial<StoryRequest>;
-    const validated = validateInput(body);
+    body = (await req.json()) as Partial<StoryRequest>;
+  } catch {
+    return NextResponse.json<StoryResponse>(
+      { error: "Ungültige Anfrage." },
+      { status: 400 }
+    );
+  }
 
-    if (!validated.ok) {
-      return NextResponse.json<StoryResponse>(
-        { error: validated.error },
-        { status: validated.status }
-      );
-    }
+  const validated = validateInput(body);
 
+  if (!validated.ok) {
+    return NextResponse.json<StoryResponse>(
+      { error: validated.error },
+      { status: validated.status }
+    );
+  }
+
+  try {
     const prompt = buildPrompt(validated.data);
 
     const response = await openai.chat.completions.create({
@@ -116,7 +136,7 @@ export async function POST(req: Request) {
       ],
     });
 
-    const text = response.choices[0]?.message?.content?.trim();
+    const text = response.choices[0]?.message?.content?.trim() ?? "";
 
     if (!text) {
       return NextResponse.json<StoryResponse>(
