@@ -1,14 +1,17 @@
 "use client";
 
-import React, { FormEvent, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Sparkles, Star, Moon, Copy, Check, RefreshCw } from "lucide-react";
 import {
   MAX_HELD_LENGTH,
   MAX_NAME_LENGTH,
   PROMPT_EXAMPLES,
+  THEMEN,
+} from "@/lib/story-config";
+import type {
+  PromptExample,
   StoryRequest,
   StoryResponse,
-  THEMEN,
   Thema,
 } from "@/lib/story-config";
 
@@ -42,7 +45,7 @@ export default function StoryGenerator() {
 
   const isFormValid = validationError === "";
 
-  const applyPromptExample = (example: (typeof PROMPT_EXAMPLES)[number]) => {
+  const applyPromptExample = (example: PromptExample) => {
     if (loading) return;
 
     setName(example.name);
@@ -71,7 +74,7 @@ export default function StoryGenerator() {
       await navigator.clipboard.writeText(story);
       setCopySuccess(true);
 
-      window.setTimeout(() => {
+      setTimeout(() => {
         setCopySuccess(false);
       }, 2000);
     } catch (err) {
@@ -80,8 +83,8 @@ export default function StoryGenerator() {
     }
   };
 
-  const generateStory = async (e?: FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
+  const generateStory = async (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
 
     if (loading) return;
 
@@ -114,7 +117,7 @@ export default function StoryGenerator() {
       let data: StoryResponse = {};
 
       try {
-        data = await response.json();
+        data = (await response.json()) as StoryResponse;
       } catch {
         throw new Error("Ungültige Serverantwort.");
       }
@@ -140,10 +143,10 @@ export default function StoryGenerator() {
 
   return (
     <main className="container">
-      <div className="shooting-star star-1" aria-hidden="true"></div>
-      <div className="shooting-star star-2" aria-hidden="true"></div>
-      <div className="shooting-star star-3" aria-hidden="true"></div>
-      <div className="shooting-star star-4" aria-hidden="true"></div>
+      <div className="shooting-star star-1" aria-hidden="true" />
+      <div className="shooting-star star-2" aria-hidden="true" />
+      <div className="shooting-star star-3" aria-hidden="true" />
+      <div className="shooting-star star-4" aria-hidden="true" />
 
       <div className="forest-container" aria-hidden="true">
         <svg
@@ -161,7 +164,10 @@ export default function StoryGenerator() {
           <p>Erschaffe dein eigenes Abenteuer in Sekunden</p>
         </header>
 
-        <section className="prompt-examples" aria-labelledby="prompt-examples-title">
+        <section
+          className="prompt-examples"
+          aria-labelledby="prompt-examples-title"
+        >
           <h2 id="prompt-examples-title">Beispiel-Prompts</h2>
           <div className="prompt-chip-list">
             {PROMPT_EXAMPLES.map((example) => (
@@ -189,7 +195,7 @@ export default function StoryGenerator() {
               onChange={(e) => setName(e.target.value)}
               autoComplete="given-name"
               maxLength={MAX_NAME_LENGTH}
-              aria-invalid={!!validationError && !trimmedName}
+              aria-invalid={Boolean(validationError && !trimmedName)}
             />
             <small className="input-hint">
               {trimmedName.length}/{MAX_NAME_LENGTH}
@@ -205,7 +211,7 @@ export default function StoryGenerator() {
               value={held}
               onChange={(e) => setHeld(e.target.value)}
               maxLength={MAX_HELD_LENGTH}
-              aria-invalid={!!validationError && !trimmedHeld}
+              aria-invalid={Boolean(validationError && !trimmedHeld)}
             />
             <small className="input-hint">
               {trimmedHeld.length}/{MAX_HELD_LENGTH}
@@ -248,7 +254,7 @@ export default function StoryGenerator() {
             >
               {loading ? (
                 <span className="button-content">
-                  <span className="button-spinner" aria-hidden="true"></span>
+                  <span className="button-spinner" aria-hidden="true" />
                   Die Feder schreibt...
                 </span>
               ) : (
