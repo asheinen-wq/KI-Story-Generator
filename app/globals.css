@@ -465,7 +465,11 @@
   filter: drop-shadow(0 0 6px #ffffff);
   z-index: 2;
   opacity: 0;
-  animation: tail 2s ease-in-out infinite, shoot 2s ease-in-out infinite;
+animation: tail 2s ease-in-out infinite, shoot 2s ease-in-out infinite;
+animation-play-state: running;
+  .container.writing .shooting-star {
+  animation-duration: 1.5s;
+}
 }
 
 @keyframes spin {
@@ -702,3 +706,4 @@
     filter: drop-shadow(0 0 2px #fff);
   }
 }
+
