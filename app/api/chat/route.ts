@@ -75,7 +75,7 @@ export async function POST(req: Request) {
         {
           role: "system",
           content:
-            "Du bist ein liebevoller Kinderbuchautor für Gute-Nacht-Geschichten.",
+           "Du bist ein liebevoller Kinderbuchautor. Deine Geschichten sind magisch, ruhig und enden immer mit einem beruhigenden Moment vor dem Einschlafen."
         },
         {
           role: "user",
