@@ -28,6 +28,9 @@ export default function StoryGenerator() {
 
   return (
     <main className="container">
+      <div className="shooting-star"></div>
+<div className="shooting-star"></div>
+<div className="shooting-star"></div>
       <div className="magic-card">
         <header style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h1>Magischer Geschichten-Erzähler</h1>
