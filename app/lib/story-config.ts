@@ -26,6 +26,9 @@ export type PromptExample = {
   thema: Thema;
 };
 
+export const MAX_NAME_LENGTH = 40;
+export const MAX_HELD_LENGTH = 80;
+
 export const PROMPT_EXAMPLES: PromptExample[] = [
   {
     label: "Mutiger Drache",
@@ -52,9 +55,6 @@ export const PROMPT_EXAMPLES: PromptExample[] = [
     thema: "Unterwasserwelt",
   },
 ];
-
-export const MAX_NAME_LENGTH = 40;
-export const MAX_HELD_LENGTH = 80;
 
 export function isValidThema(value: string): value is Thema {
   return THEMEN.includes(value as Thema);
