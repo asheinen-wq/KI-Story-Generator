@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Sparkles, Star, Moon, Copy, Check, RefreshCw } from "lucide-react";
 
 import {
@@ -22,6 +22,7 @@ export default function StoryGenerator() {
   const [held, setHeld] = useState("");
   const [thema, setThema] = useState<Thema>("Freundschaft");
   const [story, setStory] = useState("");
+  const [displayedStory, setDisplayedStory] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -47,6 +48,26 @@ export default function StoryGenerator() {
   }, [trimmedName, trimmedHeld]);
 
   const isFormValid = validationError === "";
+  useEffect(() => {
+  if (!story) {
+    setDisplayedStory("");
+    return;
+  }
+
+  let index = 0;
+  setDisplayedStory("");
+
+  const interval = setInterval(() => {
+    index += 1;
+    setDisplayedStory(story.slice(0, index));
+
+    if (index >= story.length) {
+      clearInterval(interval);
+    }
+  }, 18);
+
+  return () => clearInterval(interval);
+}, [story]);
 
   const applyPromptExample = (example: PromptExample) => {
     if (loading) return;
