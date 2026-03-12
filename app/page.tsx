@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { FormEvent } from "react";
 import { Sparkles, Star, Moon, Copy, Check, RefreshCw } from "lucide-react";
 
 import {
@@ -91,8 +90,7 @@ export default function StoryGenerator() {
     }
   };
 
-  const generateStory = async (event?: FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
+  const generateStory = async () => {
     setHasSubmitted(true);
 
     if (loading) return;
@@ -153,6 +151,11 @@ export default function StoryGenerator() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await generateStory();
   };
 
   return (
@@ -216,7 +219,7 @@ export default function StoryGenerator() {
           </div>
         </section>
 
-        <form className="form-group" onSubmit={generateStory} noValidate>
+        <form className="form-group" onSubmit={handleSubmit} noValidate>
           <div className="field-group">
             <label htmlFor="child-name">Wie heißt das Kind?</label>
             <input
