@@ -17,28 +17,31 @@ const openai = new OpenAI({
 
 function buildPrompt({ name, held, thema }: StoryRequest): string {
   return `
-Schreibe eine liebevolle, kindgerechte Gute-Nacht-Geschichte.
+Schreibe eine liebevolle Gute-Nacht-Geschichte für ein Kind.
 
-Vorgaben:
-- Name des Kindes: ${name}
-- Begleiter oder Held: ${held}
-- Thema: ${thema}
+Kind: ${name}
+Begleiter: ${held}
+Thema: ${thema}
 
-Struktur der Geschichte:
-1. Das Kind trifft den Begleiter.
+Struktur:
+1. Das Kind begegnet dem Begleiter.
 2. Sie erleben ein kleines magisches Abenteuer.
-3. Baue eine kleine, freundliche Herausforderung oder Überraschung ein.
-4. Am Ende wird alles ruhig und das Kind schläft zufrieden ein.
+3. Am Ende wird alles ruhig und das Kind schläft glücklich ein.
+
+Schreibstil:
+- warme, ruhige Sprache
+- kurze, gut verständliche Sätze
+- bildhafte Beschreibungen
+- eine kleine freundliche Überraschung
+- beruhigendes Ende
 
 Regeln:
 - 3 bis 4 kurze Absätze
-- einfache, warme Sprache
-- bildhafte Beschreibungen
-- freundlich und beruhigend
-- keine gruseligen Inhalte
 - keine Einleitung außerhalb der Geschichte
+- nichts gruseliges
+- kindgerecht für Vorlesealter
 
-Beende die Geschichte ruhig und sanft.
+Beende die Geschichte sanft und beruhigend.
 `.trim();
 }
 
