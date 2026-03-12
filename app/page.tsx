@@ -1,7 +1,7 @@
 "use client";
 
 import React, { FormEvent, useMemo, useState } from "react";
-import { Sparkles, Star, Moon } from "lucide-react";
+import { Sparkles, Star, Moon, Copy, Check, RefreshCw } from "lucide-react";
 
 const THEMEN = [
   "Freundschaft",
@@ -24,6 +24,40 @@ type StoryResponse = {
   error?: string;
 };
 
+type PromptExample = {
+  label: string;
+  name: string;
+  held: string;
+  thema: Thema;
+};
+
+const PROMPT_EXAMPLES: PromptExample[] = [
+  {
+    label: "Mutiger Drache",
+    name: "Leo",
+    held: "ein kleiner Drache namens Funki",
+    thema: "Mut & Tapferkeit",
+  },
+  {
+    label: "Freundschaft im Wald",
+    name: "Mila",
+    held: "ein schlauer Fuchs namens Lumi",
+    thema: "Freundschaft",
+  },
+  {
+    label: "Weltraumreise",
+    name: "Noah",
+    held: "ein Roboter namens Zapp",
+    thema: "Weltraum-Abenteuer",
+  },
+  {
+    label: "Zauber der Meere",
+    name: "Lina",
+    held: "eine mutige Meerjungfrau namens Neri",
+    thema: "Unterwasserwelt",
+  },
+];
+
 const MAX_NAME_LENGTH = 40;
 const MAX_HELD_LENGTH = 80;
 
@@ -34,6 +68,7 @@ export default function StoryGenerator() {
   const [story, setStory] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const trimmedName = name.trim();
   const trimmedHeld = held.trim();
@@ -56,6 +91,44 @@ export default function StoryGenerator() {
 
   const isFormValid = validationError === "";
 
+  const applyPromptExample = (example: PromptExample) => {
+    if (loading) return;
+
+    setName(example.name);
+    setHeld(example.held);
+    setThema(example.thema);
+    setError("");
+    setStory("");
+    setCopySuccess(false);
+  };
+
+  const resetStory = () => {
+    if (loading) return;
+
+    setName("");
+    setHeld("");
+    setThema("Freundschaft");
+    setStory("");
+    setError("");
+    setCopySuccess(false);
+  };
+
+  const copyStoryToClipboard = async () => {
+    if (!story) return;
+
+    try {
+      await navigator.clipboard.writeText(story);
+      setCopySuccess(true);
+
+      window.setTimeout(() => {
+        setCopySuccess(false);
+      }, 2000);
+    } catch (err) {
+      console.error("Fehler beim Kopieren:", err);
+      setError("Die Geschichte konnte leider nicht in die Zwischenablage kopiert werden.");
+    }
+  };
+
   const generateStory = async (e?: FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
 
@@ -70,6 +143,7 @@ export default function StoryGenerator() {
     setLoading(true);
     setError("");
     setStory("");
+    setCopySuccess(false);
 
     const payload: StoryRequest = {
       name: trimmedName,
@@ -136,6 +210,23 @@ export default function StoryGenerator() {
           <p>Erschaffe dein eigenes Abenteuer in Sekunden</p>
         </header>
 
+        <section className="prompt-examples" aria-labelledby="prompt-examples-title">
+          <h2 id="prompt-examples-title">Beispiel-Prompts</h2>
+          <div className="prompt-chip-list">
+            {PROMPT_EXAMPLES.map((example) => (
+              <button
+                key={example.label}
+                type="button"
+                className="prompt-chip"
+                onClick={() => applyPromptExample(example)}
+                disabled={loading}
+              >
+                {example.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
         <form className="form-group" onSubmit={generateStory} noValidate>
           <div className="field-group">
             <label htmlFor="child-name">Wie heißt das Kind?</label>
@@ -197,29 +288,59 @@ export default function StoryGenerator() {
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={loading || !isFormValid}
-            className={loading ? "loading" : ""}
-            aria-busy={loading}
-          >
-            {loading ? (
-              "Die Feder schreibt..."
-            ) : (
+          <div className="action-group">
+            <button
+              type="submit"
+              disabled={loading || !isFormValid}
+              className="primary-button"
+              aria-busy={loading}
+            >
+              {loading ? (
+                <span className="button-content">
+                  <span className="button-spinner" aria-hidden="true"></span>
+                  Die Feder schreibt...
+                </span>
+              ) : (
+                <span className="button-content">
+                  <Sparkles size={20} />
+                  Geschichte erschaffen
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={resetStory}
+              className="secondary-button"
+              disabled={loading}
+            >
               <span className="button-content">
-                <Sparkles size={20} />
-                Geschichte erschaffen
+                <RefreshCw size={18} />
+                Neue Geschichte generieren
               </span>
-            )}
-          </button>
+            </button>
+          </div>
         </form>
 
         {story && (
           <section className="story-area" aria-live="polite">
-            <div className="story-stars">
-              <Star size={20} fill="#c084fc" />
-              <Star size={20} fill="#c084fc" />
-              <Star size={20} fill="#c084fc" />
+            <div className="story-topbar">
+              <div className="story-stars">
+                <Star size={20} fill="#c084fc" />
+                <Star size={20} fill="#c084fc" />
+                <Star size={20} fill="#c084fc" />
+              </div>
+
+              <button
+                type="button"
+                className="copy-button"
+                onClick={copyStoryToClipboard}
+              >
+                <span className="button-content">
+                  {copySuccess ? <Check size={18} /> : <Copy size={18} />}
+                  {copySuccess ? "Kopiert" : "Kopieren"}
+                </span>
+              </button>
             </div>
 
             <p>{story}</p>
