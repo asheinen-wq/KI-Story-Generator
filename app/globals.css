@@ -2,9 +2,163 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #0f172a;
+:root {
+  --background: #0a0e17; /* Sehr tiefes Blau für die Nacht */
+  --foreground: #f0f9ff; /* Fast Weiß für Text */
+  --primary: #c084fc; /* Magisches Lila für Buttons/Icons */
+  --primary-hover: #a855f7;
+  --card-bg: #111827; /* Etwas helleres Grau für die Karte */
+  --border-color: #374151; /* Subtile Randfarbe */
+}
+
+@layer base {
+  body {
+    background: linear-gradient(135deg, var(--background) 0%, #111827 100%);
+    color: var(--foreground);
+    min-height: 100vh;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+/* Magischer Card-Effekt */
+.magic-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2), 0 0 15px rgba(192, 132, 252, 0.1); /* Subtiler Lila-Glow */
+  padding: 2rem;
+  width: 100%;
+  max-width: 48rem; /* max-w-3xl */
+  margin: 2rem auto;
+}
+
+/* Styling für Titel und Untertitel */
+h1 {
+  font-size: 2.5rem; /* text-4xl */
+  font-weight: 800; /* font-extrabold */
+  background: linear-gradient(to right, #ffffff, var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+h1 + p {
+  color: #94a3b8; /* text-slate-400 */
+  margin-bottom: 2rem;
+}
+
+/* Eingabefelder (Inputs) */
+input[type="text"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-top: 0.25rem;
+  background-color: #1f2937; /* Hellgrau für Felder */
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  color: var(--foreground);
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.2);
+}
+
+/* Dropdown-Feld (Select) */
+select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-top: 0.25rem;
+  background-color: #1f2937;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  color: var(--foreground);
+  font-size: 1rem;
+  appearance: none; /* Entfernt Standard-Pfeil */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23f0f9ff'%3%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.25rem;
+  transition: all 0.2s;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.2);
+}
+
+/* Labels */
+label {
+  display: block;
+  font-weight: 500;
+  color: var(--foreground);
+  margin-bottom: 1rem;
+}
+
+/* Der Zauber-Button */
+button {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
   color: white;
-  margin: 0;
-  font-family: sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Lade-Zustand (Pulsieren) */
+button.loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+/* Der Bereich für die generierte Geschichte */
+.story-area {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.story-area > p {
+  color: #e2e8f0; /* text-slate-200 */
+  line-height: 1.8; /* spacing für gute Lesbarkeit */
+  font-size: 1.125rem; /* text-lg */
+  margin-bottom: 1.5rem;
+}
+
+/* Layout-Klasse */
+.container {
+  max-width: 48rem; /* max-w-3xl */
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* space-y-6 */
 }
