@@ -71,17 +71,28 @@ export async function POST(req: Request) {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       temperature: 0.9,
-      messages: [
-        {
-          role: "system",
-          content:
-           "Du bist ein liebevoller Kinderbuchautor. Deine Geschichten sind magisch, ruhig und enden immer mit einem beruhigenden Moment vor dem Einschlafen."
-        },
-        {
-          role: "user",
-          content: buildPrompt(body),
-        },
-      ],
+messages: [
+  {
+    role: "system",
+    content: `
+Du bist ein liebevoller Kinderbuchautor.
+
+Du schreibst kurze, magische Gute-Nacht-Geschichten für Kinder im Vorlesealter.
+
+Dein Schreibstil ist:
+- warm
+- bildhaft
+- ruhig
+- leicht verständlich
+
+Die Geschichten enthalten Freundschaft, Mut oder kleine Abenteuer und enden immer friedlich, damit Kinder entspannt einschlafen können.
+`.trim(),
+  },
+  {
+    role: "user",
+    content: buildPrompt(body),
+  },
+],
     });
 
     const text = response.choices[0]?.message?.content?.trim();
