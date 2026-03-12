@@ -1,19 +1,21 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { Sparkles, Star, Moon, Copy, Check, RefreshCw } from "lucide-react";
+
 import {
   MAX_HELD_LENGTH,
   MAX_NAME_LENGTH,
   PROMPT_EXAMPLES,
-  THEMEN
+  THEMEN,
 } from "./lib/story-config";
 
 import type {
   PromptExample,
   StoryRequest,
   StoryResponse,
-  Thema
+  Thema,
 } from "./lib/story-config";
 
 export default function StoryGenerator() {
@@ -24,6 +26,7 @@ export default function StoryGenerator() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const trimmedName = name.trim();
   const trimmedHeld = held.trim();
@@ -55,6 +58,7 @@ export default function StoryGenerator() {
     setError("");
     setStory("");
     setCopySuccess(false);
+    setHasSubmitted(false);
   };
 
   const resetStory = () => {
@@ -66,13 +70,27 @@ export default function StoryGenerator() {
     setStory("");
     setError("");
     setCopySuccess(false);
+    setHasSubmitted(false);
   };
 
   const copyStoryToClipboard = async () => {
     if (!story) return;
 
     try {
-      await navigator.clipboard.writeText(story);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(story);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = story;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+
       setCopySuccess(true);
 
       setTimeout(() => {
@@ -80,12 +98,15 @@ export default function StoryGenerator() {
       }, 2000);
     } catch (err) {
       console.error("Fehler beim Kopieren:", err);
-      setError("Die Geschichte konnte leider nicht in die Zwischenablage kopiert werden.");
+      setError(
+        "Die Geschichte konnte leider nicht in die Zwischenablage kopiert werden."
+      );
     }
   };
 
-  const generateStory = async (event?: React.FormEvent<HTMLFormElement>) => {
+  const generateStory = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
+    setHasSubmitted(true);
 
     if (loading) return;
 
@@ -124,7 +145,9 @@ export default function StoryGenerator() {
       }
 
       if (!response.ok) {
-        throw new Error(data.error || `HTTP-Fehler: ${response.status}`);
+        throw new Error(
+          data.error || `HTTP-Fehler: ${response.status}`
+        );
       }
 
       if (!data.text || data.text.trim() === "") {
@@ -134,9 +157,14 @@ export default function StoryGenerator() {
       setStory(data.text.trim());
     } catch (err) {
       console.error("Fehler beim Generieren der Geschichte:", err);
-      setError(
-        "Oh weh! Die Zauberkraft hat gerade eine kleine Pause. Versuch es gleich noch einmal!"
-      );
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(
+          "Oh weh! Die Zauberkraft hat gerade eine kleine Pause. Versuch es gleich noch einmal!"
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -196,7 +224,7 @@ export default function StoryGenerator() {
               onChange={(e) => setName(e.target.value)}
               autoComplete="given-name"
               maxLength={MAX_NAME_LENGTH}
-              aria-invalid={Boolean(validationError && !trimmedName)}
+              aria-invalid={Boolean(hasSubmitted && validationError && !trimmedName)}
             />
             <small className="input-hint">
               {trimmedName.length}/{MAX_NAME_LENGTH}
@@ -212,7 +240,7 @@ export default function StoryGenerator() {
               value={held}
               onChange={(e) => setHeld(e.target.value)}
               maxLength={MAX_HELD_LENGTH}
-              aria-invalid={Boolean(validationError && !trimmedHeld)}
+              aria-invalid={Boolean(hasSubmitted && validationError && !trimmedHeld)}
             />
             <small className="input-hint">
               {trimmedHeld.length}/{MAX_HELD_LENGTH}
@@ -220,7 +248,9 @@ export default function StoryGenerator() {
           </div>
 
           <div className="field-group">
-            <label htmlFor="story-theme">Wovon soll die Geschichte handeln?</label>
+            <label htmlFor="story-theme">
+              Wovon soll die Geschichte handeln?
+            </label>
             <select
               id="story-theme"
               value={thema}
@@ -240,7 +270,7 @@ export default function StoryGenerator() {
             </p>
           )}
 
-          {!error && validationError && (
+          {!error && hasSubmitted && validationError && (
             <p className="validation-message" aria-live="polite">
               {validationError}
             </p>
