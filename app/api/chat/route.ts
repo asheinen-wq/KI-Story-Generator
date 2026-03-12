@@ -26,7 +26,8 @@ Thema: ${thema}
 Struktur:
 1. Das Kind begegnet dem Begleiter.
 2. Sie erleben ein kleines magisches Abenteuer.
-3. Am Ende wird alles ruhig und das Kind schläft glücklich ein.
+3. Baue eine kleine, freundliche Herausforderung oder Überraschung ein.
+4. Am Ende wird alles ruhig und das Kind schläft glücklich ein.
 
 Schreibstil:
 - warme, ruhige Sprache
