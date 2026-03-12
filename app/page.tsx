@@ -95,9 +95,7 @@ export default function StoryGenerator() {
       }
 
       if (!response.ok) {
-        throw new Error(
-          data.error || `HTTP-Fehler: ${response.status}`
-        );
+        throw new Error(data.error || `HTTP-Fehler: ${response.status}`);
       }
 
       if (!data.text || data.text.trim() === "") {
@@ -117,10 +115,10 @@ export default function StoryGenerator() {
 
   return (
     <main className="container">
-      <div className="shooting-star" aria-hidden="true"></div>
-      <div className="shooting-star" aria-hidden="true"></div>
-      <div className="shooting-star" aria-hidden="true"></div>
-      <div className="shooting-star" aria-hidden="true"></div>
+      <div className="shooting-star star-1" aria-hidden="true"></div>
+      <div className="shooting-star star-2" aria-hidden="true"></div>
+      <div className="shooting-star star-3" aria-hidden="true"></div>
+      <div className="shooting-star star-4" aria-hidden="true"></div>
 
       <div className="forest-container" aria-hidden="true">
         <svg
@@ -139,7 +137,7 @@ export default function StoryGenerator() {
         </header>
 
         <form className="form-group" onSubmit={generateStory} noValidate>
-          <div>
+          <div className="field-group">
             <label htmlFor="child-name">Wie heißt das Kind?</label>
             <input
               id="child-name"
@@ -156,7 +154,7 @@ export default function StoryGenerator() {
             </small>
           </div>
 
-          <div>
+          <div className="field-group">
             <label htmlFor="hero-name">Wer ist der Held / Begleiter?</label>
             <input
               id="hero-name"
@@ -172,7 +170,7 @@ export default function StoryGenerator() {
             </small>
           </div>
 
-          <div>
+          <div className="field-group">
             <label htmlFor="story-theme">Wovon soll die Geschichte handeln?</label>
             <select
               id="story-theme"
