@@ -26,6 +26,7 @@ export default function StoryGenerator() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const trimmedName = name.trim();
   const trimmedHeld = held.trim();
@@ -56,6 +57,8 @@ export default function StoryGenerator() {
     setThema(example.thema);
     setError("");
     setStory("");
+    setCopySuccess(false);
+    setHasSubmitted(false);
   };
 
   const resetStory = () => {
@@ -66,30 +69,44 @@ export default function StoryGenerator() {
     setThema("Freundschaft");
     setStory("");
     setError("");
+    setCopySuccess(false);
+    setHasSubmitted(false);
   };
 
-  const copyStory = async () => {
+  const copyStoryToClipboard = async () => {
     if (!story) return;
 
-    await navigator.clipboard.writeText(story);
-    setCopySuccess(true);
+    try {
+      await navigator.clipboard.writeText(story);
+      setCopySuccess(true);
 
-    setTimeout(() => setCopySuccess(false), 2000);
+      setTimeout(() => {
+        setCopySuccess(false);
+      }, 2000);
+    } catch (err) {
+      console.error("Fehler beim Kopieren:", err);
+      setError(
+        "Die Geschichte konnte leider nicht in die Zwischenablage kopiert werden."
+      );
+    }
   };
 
   const generateStory = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
+    setHasSubmitted(true);
 
     if (loading) return;
 
     if (!isFormValid) {
       setError(validationError);
+      setStory("");
       return;
     }
 
     setLoading(true);
     setError("");
     setStory("");
+    setCopySuccess(false);
 
     const payload: StoryRequest = {
       name: trimmedName,
@@ -100,25 +117,39 @@ export default function StoryGenerator() {
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
-      const data = (await response.json()) as StoryResponse;
+      let data: StoryResponse = {};
+
+      try {
+        data = (await response.json()) as StoryResponse;
+      } catch {
+        throw new Error("Ungültige Serverantwort.");
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || "Serverfehler");
+        throw new Error(data.error || `HTTP-Fehler: ${response.status}`);
       }
 
-      if (!data.text) {
-        throw new Error("Keine Geschichte erhalten.");
+      if (!data.text || data.text.trim() === "") {
+        throw new Error("Keine Geschichte von der API erhalten.");
       }
 
-      setStory(data.text);
+      setStory(data.text.trim());
     } catch (err) {
-      setError(
-        "Oh weh! Die Zauberkraft hat gerade eine kleine Pause. Versuch es gleich noch einmal!"
-      );
+      console.error("Fehler beim Generieren der Geschichte:", err);
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(
+          "Oh weh! Die Zauberkraft hat gerade eine kleine Pause. Versuch es gleich noch einmal!"
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -126,14 +157,18 @@ export default function StoryGenerator() {
 
   return (
     <main className="container">
-      <div className="shooting-star star-1" />
-      <div className="shooting-star star-2" />
-      <div className="shooting-star star-3" />
-      <div className="shooting-star star-4" />
+      <div className="shooting-star star-1" aria-hidden="true" />
+      <div className="shooting-star star-2" aria-hidden="true" />
+      <div className="shooting-star star-3" aria-hidden="true" />
+      <div className="shooting-star star-4" aria-hidden="true" />
 
-      <div className="forest-container">
-        <svg className="forest-svg" viewBox="0 0 1200 200">
-          <path d="M0,200 L1200,200 L1200,150 L1180,160 L1160,120 L1140,155 L1120,130 L1100,165 L1080,110 L1060,150 L1040,125 L1020,160 L1000,140 L980,170 L960,115 L940,155 L920,135 L900,170 L880,120 L860,155 L840,130 L820,165 L800,145 L780,175 L760,110 L740,160 L720,130 L700,170 L680,140 L660,175 L640,115 L620,160 L600,135 L580,175 L560,120 L540,165 L520,135 L500,175 L480,145 L460,180 L440,110 L420,160 L400,135 L380,175 L360,140 L340,180 L320,115 L300,165 L280,130 L260,175 L240,145 L220,185 L200,110 L180,165 L160,135 L140,180 L120,145 L100,185 L80,120 L60,170 L40,140 L20,180 L0,150 Z"/>
+      <div className="forest-container" aria-hidden="true">
+        <svg
+          className="forest-svg"
+          viewBox="0 0 1200 200"
+          preserveAspectRatio="none"
+        >
+          <path d="M0,200 L1200,200 L1200,150 L1180,160 L1160,120 L1140,155 L1120,130 L1100,165 L1080,110 L1060,150 L1040,125 L1020,160 L1000,140 L980,170 L960,115 L940,155 L920,135 L900,170 L880,120 L860,155 L840,130 L820,165 L800,145 L780,175 L760,110 L740,160 L720,130 L700,170 L680,140 L660,175 L640,115 L620,160 L600,135 L580,175 L560,120 L540,165 L520,135 L500,175 L480,145 L460,180 L440,110 L420,160 L400,135 L380,175 L360,140 L340,180 L320,115 L300,165 L280,130 L260,175 L240,145 L220,185 L200,110 L180,165 L160,135 L140,180 L120,145 L100,185 L80,120 L60,170 L40,140 L20,180 L0,150 Z" />
         </svg>
       </div>
 
@@ -143,67 +178,141 @@ export default function StoryGenerator() {
           <p>Erschaffe dein eigenes Abenteuer in Sekunden</p>
         </header>
 
-        <section>
-          <h2>Beispiel-Prompts</h2>
+        {!story && !loading && (
+          <p className="magic-hint">
+            🪄 Die Magie wartet auf deinen ersten Helden...
+          </p>
+        )}
 
+        {trimmedName && !story && !loading && (
+          <p className="magic-preview">
+            ✨ Heute Abend erlebt {trimmedName} ein magisches Abenteuer...
+          </p>
+        )}
+
+        <section
+          className="prompt-examples"
+          aria-labelledby="prompt-examples-title"
+        >
+          <h2 id="prompt-examples-title">Beispiel-Prompts</h2>
           <div className="prompt-chip-list">
             {PROMPT_EXAMPLES.map((example) => (
               <button
                 key={example.label}
-                className="prompt-chip"
                 type="button"
+                className="prompt-chip"
                 onClick={() => applyPromptExample(example)}
+                disabled={loading}
               >
+                <span className="prompt-chip-icon" aria-hidden="true">
+                  {example.label === "Mutiger Drache" && "✨"}
+                  {example.label === "Freundschaft im Wald" && "🌲"}
+                  {example.label === "Weltraumreise" && "🚀"}
+                  {example.label === "Zauber der Meere" && "🌊"}
+                </span>
                 {example.label}
               </button>
             ))}
           </div>
         </section>
 
-        <form className="form-group" onSubmit={generateStory}>
+        <form className="form-group" onSubmit={generateStory} noValidate>
           <div className="field-group">
-            <label>Wie heißt das Kind?</label>
+            <label htmlFor="child-name">Wie heißt das Kind?</label>
             <input
+              id="child-name"
+              type="text"
+              placeholder="z.B. Leo"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              autoComplete="given-name"
               maxLength={MAX_NAME_LENGTH}
+              aria-invalid={Boolean(hasSubmitted && validationError && !trimmedName)}
             />
+            <small className="input-hint">
+              {trimmedName.length}/{MAX_NAME_LENGTH}
+            </small>
           </div>
 
           <div className="field-group">
-            <label>Wer ist der Held / Begleiter?</label>
+            <label htmlFor="hero-name">Wer ist der Held / Begleiter?</label>
             <input
+              id="hero-name"
+              type="text"
+              placeholder="z.B. ein kleiner Drache namens Funki"
               value={held}
               onChange={(e) => setHeld(e.target.value)}
               maxLength={MAX_HELD_LENGTH}
+              aria-invalid={Boolean(hasSubmitted && validationError && !trimmedHeld)}
             />
+            <small className="input-hint">
+              {trimmedHeld.length}/{MAX_HELD_LENGTH}
+            </small>
           </div>
 
           <div className="field-group">
-            <label>Thema</label>
+            <label htmlFor="story-theme">Wovon soll die Geschichte handeln?</label>
             <select
+              id="story-theme"
               value={thema}
               onChange={(e) => setThema(e.target.value as Thema)}
             >
-              {THEMEN.map((t) => (
-                <option key={t}>{t}</option>
+              {THEMEN.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
               ))}
             </select>
           </div>
 
-          {error && <p className="error-message">{error}</p>}
+          {error && (
+            <p className="error-message" role="alert">
+              {error}
+            </p>
+          )}
 
-          <button disabled={loading || !isFormValid} className="primary-button">
-            {loading ? "Die Feder schreibt..." : "Geschichte erschaffen"}
-          </button>
+          {!error && hasSubmitted && validationError && (
+            <p className="validation-message" aria-live="polite">
+              {validationError}
+            </p>
+          )}
 
-          <button type="button" className="secondary-button" onClick={resetStory}>
-            Neue Geschichte
-          </button>
+          <div className="action-group">
+            <button
+              type="submit"
+              disabled={loading || !isFormValid}
+              className="primary-button"
+              aria-busy={loading}
+            >
+              {loading ? (
+                <span className="button-content">
+                  <span className="button-spinner" aria-hidden="true" />
+                  ✍️ Die magische Feder schreibt...
+                </span>
+              ) : (
+                <span className="button-content">
+                  <Sparkles size={20} />
+                  Magische Geschichte erschaffen
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={resetStory}
+              className="secondary-button"
+              disabled={loading}
+            >
+              <span className="button-content">
+                <RefreshCw size={18} />
+                Neue Geschichte beginnen
+              </span>
+            </button>
+          </div>
         </form>
 
         {story && (
-          <section className="story-area">
+          <section className="story-area" aria-live="polite">
             <div className="story-topbar">
               <div className="story-stars">
                 <Star size={20} fill="#c084fc" />
@@ -211,15 +320,36 @@ export default function StoryGenerator() {
                 <Star size={20} fill="#c084fc" />
               </div>
 
-              <button className="copy-button" onClick={copyStory}>
-                {copySuccess ? <Check size={18}/> : <Copy size={18}/>}
+              <button
+                type="button"
+                className="copy-button"
+                onClick={copyStoryToClipboard}
+              >
+                <span className="button-content">
+                  {copySuccess ? <Check size={18} /> : <Copy size={18} />}
+                  {copySuccess ? "Kopiert" : "Kopieren"}
+                </span>
               </button>
             </div>
 
             <p>{story}</p>
 
+            <div className="story-actions">
+              <button
+                type="button"
+                className="secondary-button story-secondary-button"
+                onClick={generateStory}
+                disabled={loading}
+              >
+                <span className="button-content">
+                  <Sparkles size={18} />
+                  Weiteres Abenteuer
+                </span>
+              </button>
+            </div>
+
             <div className="story-moon">
-              <Moon size={24}/>
+              <Moon size={24} />
             </div>
           </section>
         )}
