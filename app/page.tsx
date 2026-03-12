@@ -356,7 +356,7 @@ export default function StoryGenerator() {
               </button>
             </div>
 
-            <p>{story}</p>
+         <p>{displayedStory}</p>
 
             <div className="story-actions">
               <button
