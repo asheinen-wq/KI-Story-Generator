@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --background: #020617; /* Extrem dunkles Nacht-Blau */
+  --background: #020617; /* Tiefes Nacht-Blau */
   --foreground: #f0f9ff;
   --primary: #c084fc;
   --primary-hover: #a855f7;
-  --card-bg: rgba(17, 24, 39, 0.85); /* Etwas transparent für den Glas-Effekt */
-  --border-color: rgba(192, 132, 252, 0.3);
+  --card-bg: rgba(17, 24, 39, 0.9); /* Glas-Effekt */
+  --border-color: rgba(192, 132, 252, 0.4);
 }
 
 @layer base {
@@ -18,81 +18,127 @@
     min-height: 100vh;
     margin: 0;
     overflow-x: hidden;
-    font-family: sans-serif;
-    /* Ein sanfter blauer Nebel im Hintergrund */
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    /* Ein leichter blauer Nebel im Hintergrund */
     background: radial-gradient(circle at bottom, #1e1b4b 0%, #020617 80%);
   }
 }
 
-/* --- DER MAGISCHE WALD (Verbesserte Version) --- */
+/* --- DER MAGISCHE WALD (Silhouette) --- */
 body::after {
   content: "";
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 40vh; /* Nimmt 40% der Bildschirmhöhe ein */
-  /* Ein schöner Tannenwald-Verlauf */
-  background-image: url('https://www.transparenttextures.com/patterns/black-thread.png'), 
-                    linear-gradient(to top, #020617 0%, rgba(2, 6, 23, 0) 100%);
-  background-color: #020617;
-  /* Hier erschaffen wir die Baum-Zacken per CSS-Maske */
+  height: 35vh; /* 35% der Höhe */
+  background-color: #01040a; /* Fast Schwarz für die Silhouette */
+  /* Ein Tannenwald-Zackenmuster */
   clip-path: polygon(
-    0% 100%, 100% 100%, 100% 70%, 95% 85%, 90% 65%, 85% 80%, 80% 60%, 
-    75% 85%, 70% 55%, 65% 80%, 60% 50%, 55% 85%, 50% 60%, 45% 80%, 
-    40% 55%, 35% 85%, 30% 60%, 25% 80%, 20% 50%, 15% 85%, 10% 60%, 5% 80%, 0% 70%
+    0% 100%, 100% 100%, 100% 80%, 98% 90%, 96% 75%, 94% 85%, 92% 70%, 
+    90% 90%, 88% 65%, 86% 85%, 84% 60%, 82% 90%, 80% 65%, 78% 85%, 
+    76% 60%, 74% 90%, 72% 65%, 70% 85%, 68% 60%, 66% 90%, 64% 65%, 
+    62% 85%, 60% 60%, 58% 90%, 56% 65%, 54% 85%, 52% 60%, 50% 90%, 
+    48% 65%, 46% 85%, 44% 60%, 42% 90%, 40% 65%, 38% 85%, 36% 60%, 
+    34% 90%, 32% 65%, 30% 85%, 28% 60%, 26% 90%, 24% 65%, 22% 85%, 
+    20% 60%, 18% 90%, 16% 65%, 14% 85%, 12% 60%, 10% 90%, 8% 65%, 6% 85%, 4% 60%, 2% 80%, 0% 70%
   );
   z-index: -1;
-  opacity: 1;
 }
-/* --- STERNSCHNUPPEN ANIMATION --- */
+
+/* --- NEUE STERNSCHNUPPEN-LOGIK --- */
 .shooting-star {
   position: fixed;
-  left: 50%;
-  top: 50%;
   height: 2px;
-  background: linear-gradient(-45deg, #fff, rgba(0, 0, 255, 0));
+  background: linear-gradient(-45deg, #fff, rgba(255, 255, 255, 0));
   border-radius: 999px;
   filter: drop-shadow(0 0 6px #fff);
-  animation: tail 3000ms ease-in-out infinite, shooting 3000ms ease-in-out infinite;
   z-index: -2;
+  opacity: 0;
+  /* Die Animationen: tail (Schweif), shoot (Bewegung) */
+  animation: tail 2s ease-in-out infinite, shoot 2s ease-in-out infinite;
 }
 
+/* Der Schweif, der kurz aufleuchtet */
 @keyframes tail {
-  0% { width: 0; }
-  30% { width: 100px; }
-  100% { width: 0; }
+  0% { width: 0; opacity: 0; }
+  20% { width: 150px; opacity: 1; }
+  100% { width: 0; opacity: 0; }
 }
 
-@keyframes shooting {
-  0% { transform: translateX(0) translateY(0) rotate(45deg); }
-  100% { transform: translateX(-800px) translateY(800px) rotate(45deg); }
+/* Die Bewegung (von links-oben nach rechts-unten) */
+@keyframes shoot {
+  0% { transform: translateX(0) translateY(0) rotate(30deg); }
+  100% { transform: translateX(1200px) translateY(800px) rotate(30deg); }
 }
 
-/* Mehrere Sternschnuppen mit Verspätung */
-.shooting-star:nth-child(1) { top: 10%; left: 90%; animation-delay: 0s; }
-.shooting-star:nth-child(2) { top: 30%; left: 80%; animation-delay: 1.5s; }
-.shooting-star:nth-child(3) { top: 5%; left: 60%; animation-delay: 4s; }
+/* Eine zweite Animation für Sternschnuppen von RECHTS */
+@keyframes shoot-reverse {
+  0% { transform: translateX(0) translateY(0) rotate(-30deg); }
+  100% { transform: translateX(-1200px) translateY(800px) rotate(-30deg); }
+}
+
+/* --- KONFIGURATION DER STERNEN --- */
+
+/* 1. Stern: Von Links-Oben, schnell */
+.shooting-star:nth-child(1) {
+  top: 10%;
+  left: -200px;
+  animation-duration: 1.5s;
+  animation-delay: 0s;
+}
+
+/* 2. Stern: Von Links-Mitte, langsamer */
+.shooting-star:nth-child(2) {
+  top: 30%;
+  left: -200px;
+  animation-duration: 2.5s;
+  animation-delay: 3s;
+}
+
+/* 3. Stern: Von RECHTS-Oben, nutzt die 'shoot-reverse' Animation */
+.shooting-star:nth-child(3) {
+  top: 5%;
+  right: -200px; /* Startet außerhalb des rechten Rands */
+  left: auto; /* Wichtig, um die Standard-Links-Position zu überschreiben */
+  animation-name: tail, shoot-reverse; /* Beide Animationen gleichzeitig */
+  animation-duration: 2s;
+  animation-delay: 5s;
+}
+
+/* 4. Stern: Von RECHTS-Mitte, sehr flach */
+.shooting-star:nth-child(4) {
+  top: 40%;
+  right: -200px;
+  left: auto;
+  animation-name: tail, shoot-reverse;
+  animation-duration: 3s;
+  animation-delay: 8s;
+  animation-timing-function: cubic-bezier(0.4, 0, 1, 1); /* Startet langsamer */
+}
 
 /* --- DIE KARTE (GLAS-EFFEKT) --- */
 .magic-card {
   background: var(--card-bg);
-  backdrop-filter: blur(10px); /* Macht den Hintergrund hinter der Karte verschwommen */
+  backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
   border-radius: 1.5rem;
-  box-shadow: 0 0 30px rgba(192, 132, 252, 0.2);
-  padding: 2.5rem;
+  box-shadow: 0 0 40px rgba(192, 132, 252, 0.3);
+  padding: 3rem;
   width: 90%;
-  max-width: 600px;
-  margin: 4rem auto;
+  max-width: 650px;
+  margin: 5vh auto; /* 5% Abstand von oben */
   position: relative;
   z-index: 10;
 }
 
-/* Restliches Styling für Formular-Elemente */
-h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #fff, #c084fc); -webkit-background-clip: text; color: transparent; text-align: center; }
-input, select { width: 100%; padding: 0.75rem; margin: 0.5rem 0 1.5rem; background: #1f2937; border: 1px solid #374151; border-radius: 0.5rem; color: white; }
-button { width: 100%; padding: 1rem; background: linear-gradient(135deg, #c084fc, #a855f7); border: none; border-radius: 0.5rem; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-button:disabled { opacity: 0.5; }
-.story-area { margin-top: 2rem; line-height: 1.8; color: #e2e8f0; border-top: 1px dotted #374151; padding-top: 1.5rem; }
-
+/* Formular-Styling */
+h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to right, #fff, #c084fc); -webkit-background-clip: text; color: transparent; text-align: center; margin-bottom: 0.5rem; }
+h1 + p { text-align: center; color: #94a3b8; margin-bottom: 2rem; }
+label { display: block; font-weight: 500; color: #f0f9ff; margin-bottom: 0.25rem; }
+input, select { width: 100%; padding: 0.75rem; margin-bottom: 1.5rem; background: #1f2937; border: 1px solid #374151; border-radius: 0.5rem; color: white; font-size: 1rem; }
+input:focus, select:focus { outline: none; border-color: #c084fc; box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.2); }
+button { width: 100%; padding: 1rem; background: linear-gradient(135deg, #c084fc, #a855f7); border: none; border-radius: 0.5rem; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; }
+button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.1); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.story-area { margin-top: 2.5rem; line-height: 1.9; color: #e2e8f0; border-top: 1px dotted #374151; padding-top: 1.5rem; font-size: 1.1rem; }
