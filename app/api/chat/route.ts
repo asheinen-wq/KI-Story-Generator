@@ -4,21 +4,19 @@ import OpenAI from "openai";
 import {
   isValidThema,
   MAX_HELD_LENGTH,
-  MAX_NAME_LENGTH
+  MAX_NAME_LENGTH,
 } from "../../lib/story-config";
 
+import type {
+  StoryRequest,
+  StoryResponse,
+} from "../../lib/story-config";
 
-  text?: string;
-  error?: string;
-};
+export const runtime = "nodejs";
 
-const MAX_NAME_LENGTH = 40;
-const MAX_HELD_LENGTH = 80;
-
-function isValidThema(value: string): value is Thema {
-  return THEMEN.includes(value as Thema);
-}
-
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 function buildPrompt({ name, held, thema }: StoryRequest): string {
   return `
 Schreibe eine liebevolle, kindgerechte Gute-Nacht-Geschichte.
