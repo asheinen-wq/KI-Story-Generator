@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Sparkles, BookOpen, Star, Moon } from 'lucide-react';
+import { Sparkles, Star, Moon } from 'lucide-react';
 
 export default function StoryGenerator() {
   const [name, setName] = useState('');
@@ -26,15 +26,15 @@ export default function StoryGenerator() {
     setLoading(false);
   };
 
-return (
+  return (
     <main className="container">
-      {/* Die Sternschnuppen */}
+      {/* Sternschnuppen Animationselemente */}
       <div className="shooting-star"></div>
       <div className="shooting-star"></div>
       <div className="shooting-star"></div>
       <div className="shooting-star"></div>
 
-      {/* DER ECHTE WALD (SVG Silhouette) */}
+      {/* Die Wald-Silhouette am Boden */}
       <div className="forest-container">
         <svg className="forest-svg" viewBox="0 0 1200 200" preserveAspectRatio="none">
           <path d="M0,200 L1200,200 L1200,150 L1180,160 L1160,120 L1140,155 L1120,130 L1100,165 L1080,110 L1060,150 L1040,125 L1020,160 L1000,140 L980,170 L960,115 L940,155 L920,135 L900,170 L880,120 L860,155 L840,130 L820,165 L800,145 L780,175 L760,110 L740,160 L720,130 L700,170 L680,140 L660,175 L640,115 L620,160 L600,135 L580,175 L560,120 L540,165 L520,135 L500,175 L480,145 L460,180 L440,110 L420,160 L400,135 L380,175 L360,140 L340,180 L320,115 L300,165 L280,130 L260,175 L240,145 L220,185 L200,110 L180,165 L160,135 L140,180 L120,145 L100,185 L80,120 L60,170 L40,140 L20,180 L0,150 Z" />
@@ -47,7 +47,7 @@ return (
           <p>Erschaffe dein eigenes Abenteuer in Sekunden</p>
         </header>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="form-group">
           <div>
             <label>Wie heißt das Kind?</label>
             <input 
