@@ -3,52 +3,143 @@
 @tailwind utilities;
 
 :root {
-  --background: #020617; /* Tiefes Nacht-Blau */
+  --background: #020617;
   --foreground: #f0f9ff;
   --primary: #c084fc;
   --primary-hover: #a855f7;
-  --card-bg: rgba(17, 24, 39, 0.9); /* Glas-Effekt */
+  --card-bg: rgba(17, 24, 39, 0.9);
   --border-color: rgba(192, 132, 252, 0.4);
 }
 
 @layer base {
   body {
-    background: var(--background);
+    background: radial-gradient(circle at bottom, #1e1b4b 0%, #020617 80%);
     color: var(--foreground);
-    min-height: 100vh;
     margin: 0;
+    min-height: 100vh;
     overflow-x: hidden;
     font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-    /* Ein leichter blauer Nebel im Hintergrund */
-    background: radial-gradient(circle at bottom, #1e1b4b 0%, #020617 80%);
   }
 }
 
-/* --- DER NEUE WALD (Container für das SVG) --- */
+/* --- LAYOUT --- */
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  position: relative;
+}
+
+.magic-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 600px;
+  z-index: 10;
+  margin-top: 5vh;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* --- FORMULAR ELEMENTE --- */
+h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  background: linear-gradient(to right, #fff, var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #e2e8f0;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.2);
+}
+
+button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: transform 0.2s;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- DER WALD --- */
 .forest-container {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 180px; /* So hoch ist der Wald am Boden */
-  z-index: -1;
+  height: 200px;
+  z-index: 5;
   pointer-events: none;
 }
 
 .forest-svg {
   width: 100%;
   height: 100%;
-  fill: #01040a; /* Tiefschwarze Silhouette */
+  fill: #01040a;
 }
 
-/* --- DEINE SCHÖNEN STERNSCHNUPPEN (Bleiben wie sie waren) --- */
+/* --- STERNSCHNUPPEN --- */
 .shooting-star {
   position: fixed;
   height: 2px;
   background: linear-gradient(-45deg, #fff, rgba(255, 255, 255, 0));
   border-radius: 999px;
   filter: drop-shadow(0 0 6px #fff);
-  z-index: -2;
+  z-index: 2;
   opacity: 0;
   animation: tail 2s ease-in-out infinite, shoot 2s ease-in-out infinite;
 }
@@ -69,7 +160,17 @@
   100% { transform: translateX(-1200px) translateY(800px) rotate(-30deg); }
 }
 
-.shooting-star:nth-child(1) { top: 10%; left: -200px; animation-duration: 1.5s; animation-delay: 0s; }
-.shooting-star:nth-child(2) { top: 30%; left: -200px; animation-duration: 2.5s; animation-delay: 3s; }
-.shooting-star:nth-child(3) { top: 5%; right: -200px; left: auto; animation-name: tail, shoot-reverse; animation-duration: 2s; animation-delay: 5s; }
-.shooting-star:nth-child(4) { top: 40%; right: -200px; left: auto; animation-name: tail, shoot-reverse; animation-duration: 3s; animation-delay: 8s; }
+.shooting-star:nth-child(1) { top: 10%; left: -100px; animation-duration: 2s; animation-delay: 0s; }
+.shooting-star:nth-child(2) { top: 35%; left: -100px; animation-duration: 3s; animation-delay: 4s; }
+.shooting-star:nth-child(3) { top: 5%; right: -100px; left: auto; animation-name: tail, shoot-reverse; animation-duration: 2.5s; animation-delay: 2s; }
+.shooting-star:nth-child(4) { top: 45%; right: -100px; left: auto; animation-name: tail, shoot-reverse; animation-duration: 4s; animation-delay: 7s; }
+
+/* --- STORY AREA --- */
+.story-area {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px dotted #374151;
+  color: #e2e8f0;
+  line-height: 1.8;
+  font-size: 1.125rem;
+}
