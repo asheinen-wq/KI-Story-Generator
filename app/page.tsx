@@ -196,6 +196,7 @@ useEffect(() => {
       <div className="shooting-star star-3" aria-hidden="true" />
       <div className="shooting-star star-4" aria-hidden="true" />
 
+      <div className="mist-layer" aria-hidden="true"></div>
       <div className="forest-container" aria-hidden="true">
         <svg
           className="forest-svg"
