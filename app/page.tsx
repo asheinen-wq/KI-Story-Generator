@@ -341,6 +341,11 @@ useEffect(() => {
 
         {story && (
           <section className="story-area" aria-live="polite">
+            {isWriting && (
+  <div className="writing-sparkles">
+    ✨ ✨ ✨
+  </div>
+)}
             <div className="story-topbar">
               <div className="story-stars">
                 <Star size={20} fill="#c084fc" />
