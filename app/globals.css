@@ -707,3 +707,62 @@ animation-play-state: running;
   }
 }
 
+.starfield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.starfield::before,
+.starfield::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-repeat: repeat;
+}
+
+/* kleine Sterne */
+
+.starfield::before {
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(1px 1px at 70% 80%, white, transparent),
+    radial-gradient(1px 1px at 40% 60%, white, transparent),
+    radial-gradient(2px 2px at 90% 10%, white, transparent),
+    radial-gradient(1px 1px at 10% 90%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent);
+
+  animation: starTwinkle 6s infinite alternate;
+}
+
+/* schwächere Sterne */
+
+.starfield::after {
+  background-image:
+    radial-gradient(1px 1px at 15% 70%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 80% 40%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 35% 15%, rgba(255,255,255,0.6), transparent);
+
+  animation: starTwinkle 9s infinite alternate;
+}
+
+@keyframes starTwinkle {
+
+  0% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.5;
+  }
+}
