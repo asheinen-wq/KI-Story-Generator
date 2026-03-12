@@ -27,7 +27,8 @@ Vorgaben:
 Struktur der Geschichte:
 1. Das Kind trifft den Begleiter.
 2. Sie erleben ein kleines magisches Abenteuer.
-3. Am Ende wird alles ruhig und das Kind schläft zufrieden ein.
+3. Baue eine kleine, freundliche Herausforderung oder Überraschung ein.
+4. Am Ende wird alles ruhig und das Kind schläft zufrieden ein.
 
 Regeln:
 - 3 bis 4 kurze Absätze
