@@ -374,7 +374,12 @@ useEffect(() => {
               </button>
             </div>
 
-         <p>{displayedStory}</p>
+        {title && (
+  <h2 className="mb-4 text-2xl font-semibold text-white">
+    {title}
+  </h2>
+)}
+            <p>{displayedStory}</p>
 
             <div className="story-actions">
               <button
