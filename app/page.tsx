@@ -22,6 +22,7 @@ export default function StoryGenerator() {
   const [held, setHeld] = useState("");
   const [thema, setThema] = useState<Thema>("Freundschaft");
   const [story, setStory] = useState("");
+  const [title, setTitle] = useState("");
   const [displayedStory, setDisplayedStory] = useState("");
   const [isWriting, setIsWriting] = useState(false);
   const [error, setError] = useState("");
