@@ -15,10 +15,12 @@ export type StoryRequest = {
 };
 
 export type StoryResponse = {
-  text?: string;
+  title?: string;
+  story?: string;
+  illustrationScene?: string;
+  illustrationPrompt?: string;
   error?: string;
 };
-
 export type PromptExample = {
   label: string;
   name: string;
