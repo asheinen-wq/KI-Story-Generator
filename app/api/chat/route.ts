@@ -17,32 +17,36 @@ const openai = new OpenAI({
 
 function buildPrompt({ name, held, thema }: StoryRequest): string {
   return `
-Schreibe eine liebevolle Gute-Nacht-Geschichte für ein Kind.
+Erstelle eine liebevolle Gute-Nacht-Geschichte für ein Kind.
 
 Kind: ${name}
 Begleiter: ${held}
 Thema: ${thema}
 
-Struktur:
-1. Das Kind begegnet dem Begleiter.
-2. Sie erleben ein kleines magisches Abenteuer.
-3. Baue eine kleine, freundliche Herausforderung oder Überraschung ein.
-4. Am Ende wird alles ruhig und das Kind schläft glücklich ein.
-
-Schreibstil:
-- warme, ruhige Sprache
-- kurze, gut verständliche Sätze
-- bildhafte Beschreibungen
-- eine kleine freundliche Überraschung
-- beruhigendes Ende
-
-Regeln:
-- 3 bis 4 kurze Absätze
-- keine Einleitung außerhalb der Geschichte
-- nichts gruseliges
+Anforderungen an die Geschichte:
+- warm, ruhig, magisch
 - kindgerecht für Vorlesealter
+- 3 bis 4 kurze Absätze
+- nichts gruseliges
+- friedliches, beruhigendes Ende
 
-Beende die Geschichte sanft und beruhigend.
+Zusätzliche Aufgabe:
+Wähle genau eine Szene aus der Geschichte aus, die sich gut als Illustration eignet.
+
+Gib die Antwort ausschließlich als JSON in diesem Format zurück:
+
+{
+  "title": "Titel der Geschichte",
+  "story": "Die komplette Geschichte",
+  "illustrationScene": "Kurze Beschreibung einer klaren Szene aus der Geschichte",
+  "illustrationPrompt": "Bildprompt auf Deutsch für eine Kinderbuch-Illustration im sanften Aquarellstil"
+}
+
+Wichtig:
+- illustrationScene: 1 bis 2 Sätze
+- illustrationPrompt: beschreibt nur eine einzige, gut darstellbare Szene
+- Stil: Kinderbuch, sanfter Aquarellstil, freundlich, verträumt, magische Nachtstimmung
+- kein Text im Bild
 `.trim();
 }
 
@@ -69,36 +73,42 @@ export async function POST(req: Request) {
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       temperature: 0.9,
-messages: [
-  {
-    role: "system",
-    content: `
+      messages: [
+        {
+          role: "system",
+          content: `
 Du bist ein liebevoller Kinderbuchautor.
 
 Du schreibst kurze, magische Gute-Nacht-Geschichten für Kinder im Vorlesealter.
 
-Dein Schreibstil ist:
-- warm
-- bildhaft
-- ruhig
-- leicht verständlich
-
-Die Geschichten enthalten Freundschaft, Mut oder kleine Abenteuer und enden immer friedlich, damit Kinder entspannt einschlafen können.
+Antworte ausschließlich mit gültigem JSON.
 `.trim(),
-  },
-  {
-    role: "user",
-    content: buildPrompt(body),
-  },
-],
+        },
+        {
+          role: "user",
+          content: buildPrompt(body),
+        },
+      ],
     });
 
-    const text = response.choices[0]?.message?.content?.trim();
+    const content = response.choices[0]?.message?.content?.trim();
+
+    if (!content) {
+      return NextResponse.json<StoryResponse>(
+        { error: "Keine Antwort von OpenAI erhalten." },
+        { status: 500 }
+      );
+    }
+
+    const data = JSON.parse(content);
 
     return NextResponse.json<StoryResponse>({
-      text: text || "",
+      title: data.title || "",
+      story: data.story || "",
+      illustrationScene: data.illustrationScene || "",
+      illustrationPrompt: data.illustrationPrompt || "",
     });
   } catch (err) {
     console.error(err);
