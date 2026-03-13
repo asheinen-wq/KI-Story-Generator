@@ -633,6 +633,11 @@ animation-play-state: running;
     padding: 0.9rem 1rem;
     font-size: 0.95rem;
   }
+  .mist-layer {
+  bottom: 70px;
+  height: 90px;
+  filter: blur(14px);
+  }
 }
 
 /* ACCESSIBILITY */
@@ -961,3 +966,4 @@ animation-play-state: running;
     opacity: 0.45;
   }
 }
+
