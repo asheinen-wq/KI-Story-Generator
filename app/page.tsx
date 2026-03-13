@@ -158,9 +158,9 @@ useEffect(() => {
         throw new Error(data.error || `HTTP-Fehler: ${response.status}`);
       }
 
-      if (!data.text || data.text.trim() === "") {
-        throw new Error("Keine Geschichte von der API erhalten.");
-      }
+     if (!data.story || data.story.trim() === "") {
+  throw new Error("Keine Geschichte von der API erhalten.");
+}
 
       setStory(data.text.trim());
     } catch (err) {
