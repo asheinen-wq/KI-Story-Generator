@@ -163,6 +163,7 @@ useEffect(() => {
   throw new Error("Keine Geschichte von der API erhalten.");
 }
 
+      setTitle(data.title?.trim() || "");
       setStory(data.story.trim());
     } catch (err) {
       console.error("Fehler beim Generieren der Geschichte:", err);
