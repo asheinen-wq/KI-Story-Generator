@@ -396,13 +396,21 @@ if (imageData.imageUrl) {
               </button>
             </div>
 
-        {title && (
+     {imageUrl && (
+  <img
+    src={imageUrl}
+    alt="Illustration"
+    className="mb-6 w-full rounded-xl"
+  />
+)}
+
+{title && (
   <h2 className="mb-4 text-2xl font-semibold text-white">
     {title}
   </h2>
 )}
-            <p>{displayedStory}</p>
 
+<p>{displayedStory}</p>
             <div className="story-actions">
               <button
                 type="button"
