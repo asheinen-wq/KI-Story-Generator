@@ -417,7 +417,7 @@ useEffect(() => {
     <img
       src={imageUrl}
       alt="Illustration"
-      className="h-48 w-auto rounded-lg object-contain"
+      style={{ height: "180px", width: "auto", display: "block" }}
     />
   </div>
 )}
