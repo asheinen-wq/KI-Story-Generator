@@ -423,7 +423,7 @@ style={{ maxHeight: "220px", maxWidth: "320px", width: "100%", objectFit: "conta
 )}
             
 {title && (
-  <h2 className="mb-4 text-2xl font-semibold text-white">
+ <h2 className="mb-4 text-2xl font-semibold text-white text-center">
     {title}
   </h2>
 )}
