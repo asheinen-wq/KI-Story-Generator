@@ -224,7 +224,7 @@ const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 };
 
 return (
-  <main className={`container ${isWriting ? "writing" : ""}`}>
+<main className={isWriting ? "container writing" : "container"}>
   <div className="starfield" aria-hidden="true">
     <div className="stars stars-layer-1"></div>
     <div className="stars stars-layer-2"></div>
