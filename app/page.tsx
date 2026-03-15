@@ -162,9 +162,9 @@ useEffect(() => {
     let data: StoryResponse = {};
 
     try {
-      data = (await response.json()) as StoryResponse;
-    } catch {
-      throw new Error("Ungültige Serverantwort.");
+   data = (await response.json()) as StoryResponse;
+    } catch (err) {
+     throw new Error("Ungültige Serverantwort.");
     }
 
     if (!response.ok) {
