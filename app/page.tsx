@@ -417,7 +417,7 @@ useEffect(() => {
     <img
       src={imageUrl}
       alt="Illustration"
-      style={{ height: "180px", width: "auto", display: "block" }}
+    style={{ maxHeight: "220px", width: "100%", objectFit: "contain" }}
     />
   </div>
 )}
