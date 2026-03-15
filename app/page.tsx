@@ -412,12 +412,14 @@ useEffect(() => {
               </button>
             </div>
 
-     {imageUrl && (
-  <img
-    src={imageUrl}
-    alt="Illustration"
-    className="mb-6 w-full rounded-xl"
-  />
+    {imageUrl && (
+  <div className="mb-6 overflow-hidden rounded-xl">
+    <img
+      src={imageUrl}
+      alt="Illustration"
+      className="h-64 w-full object-cover"
+    />
+  </div>
 )}
 
 {title && (
