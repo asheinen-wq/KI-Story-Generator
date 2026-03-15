@@ -171,6 +171,22 @@ useEffect(() => {
 
       setIllustrationScene(data.illustrationScene || "");
       setIllustrationPrompt(data.illustrationPrompt || "");
+const imageResponse = await fetch("/api/illustration", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    prompt: data.illustrationPrompt,
+  }),
+});
+
+const imageData = await imageResponse.json();
+
+if (imageData.imageUrl) {
+  setImageUrl(imageData.imageUrl);
+}
+      
     } catch (err) {
       console.error("Fehler beim Generieren der Geschichte:", err);
 
