@@ -172,7 +172,7 @@ useEffect(() => {
       setTitle(data.title?.trim() || "");
       setStory(data.story.trim());
 
-   setIllustrationScene(data.illustrationScene || "");
+  setIllustrationScene(data.illustrationScene || "");
 setIllustrationPrompt(data.illustrationPrompt || "");
 
 console.log("illustrationPrompt:", data.illustrationPrompt);
