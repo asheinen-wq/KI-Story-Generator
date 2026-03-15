@@ -218,11 +218,13 @@ useEffect(() => {
   }
 };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
- 
-  return (
-<main className={`container ${isWriting ? "writing" : ""}`}>
+const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  await generateStory();
+};
+
+return (
+  <main className={`container ${isWriting ? "writing" : ""}`}>
   <div className="starfield" aria-hidden="true">
     <div className="stars stars-layer-1"></div>
     <div className="stars stars-layer-2"></div>
