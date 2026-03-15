@@ -122,92 +122,101 @@ useEffect(() => {
     }
   };
 
-  const generateStory = async () => {
-    setHasSubmitted(true);
+ const generateStory = async () => {
+  setHasSubmitted(true);
 
-    if (loading) return;
+  if (loading) return;
 
-    if (!isFormValid) {
-      setError(validationError);
-      setStory("");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
+  if (!isFormValid) {
+    setError(validationError);
     setStory("");
-    setCopySuccess(false);
+    setDisplayedStory("");
+    return;
+  }
 
-    const payload: StoryRequest = {
-      name: trimmedName,
-      held: trimmedHeld,
-      thema,
-    };
+  setLoading(true);
+  setError("");
+  setStory("");
+  setDisplayedStory("");
+  setTitle("");
+  setIllustrationScene("");
+  setIllustrationPrompt("");
+  setImageUrl("");
+  setCopySuccess(false);
+
+  const payload: StoryRequest = {
+    name: trimmedName,
+    held: trimmedHeld,
+    thema,
+  };
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    let data: StoryResponse = {};
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      let data: StoryResponse = {};
-
-      try {
-        data = (await response.json()) as StoryResponse;
-      } catch {
-        throw new Error("Ungültige Serverantwort.");
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP-Fehler: ${response.status}`);
-      }
-
-     if (!data.story || data.story.trim() === "") {
-  throw new Error("Keine Geschichte von der API erhalten.");
-}
-
-      setTitle(data.title?.trim() || "");
-      setStory(data.story.trim());
-
-  setIllustrationScene(data.illustrationScene || "");
-setIllustrationPrompt(data.illustrationPrompt || "");
-
-console.log("illustrationPrompt:", data.illustrationPrompt);
-
-const imageResponse = await fetch("/api/illustration", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    prompt: data.illustrationPrompt,
-  }),
-});
-
-const imageData = await imageResponse.json();
-console.log("imageData:", imageData);
-
-if (imageData.imageUrl) {
-  setImageUrl(imageData.imageUrl);
-}
-      
-    } catch (err) {
-      console.error("Fehler beim Generieren der Geschichte:", err);
-
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(
-          "Oh weh! Die Zauberkraft hat gerade eine kleine Pause. Versuch es gleich noch einmal!"
-        );
-      }
-    } finally {
-      setLoading(false);
+      data = (await response.json()) as StoryResponse;
+    } catch {
+      throw new Error("Ungültige Serverantwort.");
     }
-  };
+
+    if (!response.ok) {
+      throw new Error(data.error || `HTTP-Fehler: ${response.status}`);
+    }
+
+    if (!data.story || data.story.trim() === "") {
+      throw new Error("Keine Geschichte von der API erhalten.");
+    }
+
+    setTitle(data.title?.trim() || "");
+    setStory(data.story.trim());
+
+    setIllustrationScene(data.illustrationScene || "");
+    setIllustrationPrompt(data.illustrationPrompt || "");
+
+    console.log("illustrationPrompt:", data.illustrationPrompt);
+
+    const imageResponse = await fetch("/api/illustration", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: data.illustrationPrompt,
+      }),
+    });
+
+    console.log(
+      "imageResponse.ok:",
+      imageResponse.ok,
+      "status:",
+      imageResponse.status
+    );
+
+    const imageData = await imageResponse.json();
+    console.log("imageData:", imageData);
+
+    if (imageData.imageUrl) {
+      setImageUrl(imageData.imageUrl);
+    }
+  } catch (err) {
+    console.error("Fehler beim Generieren der Geschichte:", err);
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Beim Generieren der Geschichte ist ein Fehler aufgetreten."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
