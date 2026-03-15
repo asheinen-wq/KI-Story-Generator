@@ -213,7 +213,7 @@ useEffect(() => {
         ? err.message
         : "Beim Generieren der Geschichte ist ein Fehler aufgetreten."
     );
-    } finally {
+  } finally {
       setLoading(false);
     }
   };
