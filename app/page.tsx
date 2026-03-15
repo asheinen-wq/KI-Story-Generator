@@ -216,14 +216,14 @@ useEffect(() => {
   } finally {
     setLoading(false);
   }
-};
 
 const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
   event.preventDefault();
   void generateStory();
-};
 
-return (
+  return (
+
+
 <main className={isWriting ? "container writing" : "container"}>
   <div className="starfield" aria-hidden="true">
     <div className="stars stars-layer-1"></div>
@@ -450,11 +450,11 @@ style={{ maxHeight: "220px", maxWidth: "320px", width: "auto", objectFit: "conta
               </button>
             </div>
 
-         <div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
-  <Moon size={24} />
-</div>
-          </section>
-        )}
+    <div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
+            <Moon size={24} />
+          </div>
+  </section>
+    )}
       </div>
     </main>
   );
