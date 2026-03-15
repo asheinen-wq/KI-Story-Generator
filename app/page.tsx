@@ -213,82 +213,51 @@ useEffect(() => {
         ? err.message
         : "Beim Generieren der Geschichte ist ein Fehler aufgetreten."
     );
-  } finally {
-      setLoading(false);
-    }
-  };
+<div className="mx-auto flex max-w-md flex-col items-center text-center">
+  {imageUrl && (
+    <div className="mb-6 flex justify-center items-center overflow-hidden rounded-xl bg-black/20 p-2">
+      <img
+        src={imageUrl}
+        alt="Illustration"
+        style={{
+          maxHeight: "220px",
+          maxWidth: "320px",
+          width: "auto",
+          objectFit: "contain",
+          display: "block",
+        }}
+      />
+    </div>
+  )}
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    void generateStory();
-  };
+  {title && (
+    <h2 className="mb-4 text-3xl font-bold text-white text-center">
+      {title}
+    </h2>
+  )}
 
-  return (
-    <main className={isWriting ? "container writing" : "container"}>
-  <div className="starfield" aria-hidden="true">
-    <div className="stars stars-layer-1"></div>
-    <div className="stars stars-layer-2"></div>
-    <div className="stars stars-layer-3"></div>
+  <div className="w-full space-y-4 text-center">
+    {displayedStory.split("\n\n").map((paragraph, i) => (
+      <p key={i} className="leading-8 text-center">
+        {paragraph}
+      </p>
+    ))}
   </div>
-  
-      <div className="shooting-star star-1" aria-hidden="true" />
-      <div className="shooting-star star-2" aria-hidden="true" />
-      <div className="shooting-star star-3" aria-hidden="true" />
-      <div className="shooting-star star-4" aria-hidden="true" />
+</div>
 
-      <div className="mist-layer" aria-hidden="true"></div>
-      <div className="forest-container" aria-hidden="true">
-        <svg
-          className="forest-svg"
-          viewBox="0 0 1200 200"
-          preserveAspectRatio="none"
-        >
-          <path d="M0,200 L1200,200 L1200,150 L1180,160 L1160,120 L1140,155 L1120,130 L1100,165 L1080,110 L1060,150 L1040,125 L1020,160 L1000,140 L980,170 L960,115 L940,155 L920,135 L900,170 L880,120 L860,155 L840,130 L820,165 L800,145 L780,175 L760,110 L740,160 L720,130 L700,170 L680,140 L660,175 L640,115 L620,160 L600,135 L580,175 L560,120 L540,165 L520,135 L500,175 L480,145 L460,180 L440,110 L420,160 L400,135 L380,175 L360,140 L340,180 L320,115 L300,165 L280,130 L260,175 L240,145 L220,185 L200,110 L180,165 L160,135 L140,180 L120,145 L100,185 L80,120 L60,170 L40,140 L20,180 L0,150 Z" />
-        </svg>
-      </div>
-
-      <div className="magic-card">
-        <header className="magic-header">
-          <h1>Magischer Geschichten-Erzähler</h1>
-          <p>Erschaffe dein eigenes Abenteuer in Sekunden</p>
-        </header>
-
-        {!story && !loading && (
-          <p className="magic-hint">
-            🪄 Die Magie wartet auf deinen ersten Helden...
-          </p>
-        )}
-
-        {trimmedName && !story && !loading && (
-          <p className="magic-preview">
-            ✨ Heute Abend erlebt {trimmedName} ein magisches Abenteuer...
-          </p>
-        )}
-
-        <section
-          className="prompt-examples"
-          aria-labelledby="prompt-examples-title"
-        >
-          <h2 id="prompt-examples-title">Beispiel-Prompts</h2>
-          <div className="prompt-chip-list">
-            {PROMPT_EXAMPLES.map((example) => (
-              <button
-                key={example.label}
-                type="button"
-                className="prompt-chip"
-                onClick={() => applyPromptExample(example)}
-                disabled={loading}
-              >
-                <span className="prompt-chip-icon" aria-hidden="true">
-                  {example.label === "Mutiger Drache" && "✨"}
-                  {example.label === "Freundschaft im Wald" && "🌲"}
-                  {example.label === "Weltraumreise" && "🚀"}
-                  {example.label === "Zauber der Meere" && "🌊"}
-                </span>
-                {example.label}
-              </button>
-            ))}
-          </div>
+<div className="story-actions">
+  <button
+    type="button"
+    className="secondary-button story-secondary-button"
+    onClick={generateStory}
+    disabled={loading}
+  >
+    <span className="button-content">
+      <Sparkles size={18} />
+      Weiteres Abenteuer
+    </span>
+  </button>
+</div>
         </section>
 
         <form className="form-group" onSubmit={handleSubmit} noValidate>
