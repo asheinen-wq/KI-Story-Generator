@@ -422,13 +422,20 @@ style={{ maxHeight: "220px", maxWidth: "320px", width: "auto", objectFit: "conta
   </div>
 )}
             
-{title && (
- <h2 className="mb-4 text-2xl font-semibold text-white text-center">
-    {title}
-  </h2>
-)}
+<div className="text-center">
+  {title && (
+    <h2 className="mb-4 text-3xl font-bold text-white">
+      {title}
+    </h2>
+  )}
 
-<p>{displayedStory}</p>
+<div className="mx-auto max-w-md text-center space-y-4">
+  {displayedStory.split("\n\n").map((paragraph, i) => (
+    <p key={i} className="leading-8 text-center">
+      {paragraph}
+    </p>
+  ))}
+</div>
             <div className="story-actions">
               <button
                 type="button"
