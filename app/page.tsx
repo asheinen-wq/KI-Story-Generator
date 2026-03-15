@@ -417,7 +417,7 @@ useEffect(() => {
     <img
       src={imageUrl}
       alt="Illustration"
-      className="h-64 w-full object-cover"
+      className="h-64 w-full object-contain"
     />
   </div>
 )}
