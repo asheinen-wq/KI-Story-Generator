@@ -413,7 +413,7 @@ useEffect(() => {
             </div>
 
 {imageUrl && (
-  <div className="mb-6 flex justify-center overflow-hidden rounded-xl bg-white/5 p-3 border border-white/10">
+  <div className="mb-6 flex justify-center items-center overflow-hidden rounded-xl bg-black/20 p-2">
     <img
       src={imageUrl}
       alt="Illustration"
