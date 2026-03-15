@@ -221,7 +221,6 @@ useEffect(() => {
 const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
   event.preventDefault();
   await generateStory();
-};
 
 return (
   <main className={`container ${isWriting ? "writing" : ""}`}>
