@@ -169,8 +169,11 @@ useEffect(() => {
       setTitle(data.title?.trim() || "");
       setStory(data.story.trim());
 
-      setIllustrationScene(data.illustrationScene || "");
-      setIllustrationPrompt(data.illustrationPrompt || "");
+   setIllustrationScene(data.illustrationScene || "");
+setIllustrationPrompt(data.illustrationPrompt || "");
+
+console.log("illustrationPrompt:", data.illustrationPrompt);
+
 const imageResponse = await fetch("/api/illustration", {
   method: "POST",
   headers: {
@@ -182,6 +185,7 @@ const imageResponse = await fetch("/api/illustration", {
 });
 
 const imageData = await imageResponse.json();
+console.log("imageData:", imageData);
 
 if (imageData.imageUrl) {
   setImageUrl(imageData.imageUrl);
