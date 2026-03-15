@@ -213,17 +213,18 @@ useEffect(() => {
         ? err.message
         : "Beim Generieren der Geschichte ist ein Fehler aufgetreten."
     );
-  } finally {
-    setLoading(false);
-  }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  void generateStory();
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void generateStory();
+  };
 
   return (
-
-<main className={isWriting ? "container writing" : "container"}>
+    <main className={isWriting ? "container writing" : "container"}>
   <div className="starfield" aria-hidden="true">
     <div className="stars stars-layer-1"></div>
     <div className="stars stars-layer-2"></div>
