@@ -168,6 +168,9 @@ useEffect(() => {
 
       setTitle(data.title?.trim() || "");
       setStory(data.story.trim());
+
+      setIllustrationScene(data.illustrationScene || "");
+      setIllustrationPrompt(data.illustrationPrompt || "");
     } catch (err) {
       console.error("Fehler beim Generieren der Geschichte:", err);
 
