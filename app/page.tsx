@@ -213,14 +213,14 @@ useEffect(() => {
         ? err.message
         : "Beim Generieren der Geschichte ist ein Fehler aufgetreten."
     );
-   } finally {
+  } finally {
     setLoading(false);
   }
 };
 
-const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
   event.preventDefault();
-  await generateStory();
+  void generateStory();
 };
 
 return (
