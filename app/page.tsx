@@ -417,11 +417,17 @@ useEffect(() => {
     <img
       src={imageUrl}
       alt="Illustration"
-style={{ maxHeight: "220px", maxWidth: "320px", width: "auto", objectFit: "contain", display: "block" }}
+      style={{
+        maxHeight: "220px",
+        maxWidth: "320px",
+        width: "auto",
+        objectFit: "contain",
+        display: "block",
+      }}
     />
   </div>
 )}
-            
+
 <div className="text-center">
   {title && (
     <h2 className="mb-4 text-3xl font-bold text-white">
@@ -429,30 +435,32 @@ style={{ maxHeight: "220px", maxWidth: "320px", width: "auto", objectFit: "conta
     </h2>
   )}
 
-<div className="mx-auto max-w-md text-center space-y-4">
-  {displayedStory.split("\n\n").map((paragraph, i) => (
-    <p key={i} className="leading-8 text-center">
-      {paragraph}
-    </p>
-  ))}
+  <div className="mx-auto max-w-md text-center space-y-4">
+    {displayedStory.split("\n\n").map((paragraph, i) => (
+      <p key={i} className="leading-8 text-center">
+        {paragraph}
+      </p>
+    ))}
+  </div>
 </div>
-            <div className="story-actions">
-              <button
-                type="button"
-                className="secondary-button story-secondary-button"
-                onClick={generateStory}
-                disabled={loading}
-              >
-                <span className="button-content">
-                  <Sparkles size={18} />
-                  Weiteres Abenteuer
-                </span>
-              </button>
-            </div>
 
-    <div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
-            <Moon size={24} />
-          </div>
+<div className="story-actions">
+  <button
+    type="button"
+    className="secondary-button story-secondary-button"
+    onClick={generateStory}
+    disabled={loading}
+  >
+    <span className="button-content">
+      <Sparkles size={18} />
+      Weiteres Abenteuer
+    </span>
+  </button>
+</div>
+
+<div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
+  <Moon size={24} />
+</div>
   </section>
     )}
       </div>
