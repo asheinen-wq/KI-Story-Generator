@@ -355,83 +355,84 @@ useEffect(() => {
           </div>
         </form>
 
-        {story && (
-          <section className="story-area" aria-live="polite">
-            {isWriting && (
-  <div className="writing-sparkles">
-    ✨ ✨ ✨
-  </div>
-)}
-            <div className="story-topbar">
-              <div className="story-stars">
-                <Star size={20} fill="#c084fc" />
-                <Star size={20} fill="#c084fc" />
-                <Star size={20} fill="#c084fc" />
-              </div>
-
-              <button
-                type="button"
-                className="copy-button"
-                onClick={copyStoryToClipboard}
-              >
-                <span className="button-content">
-                  {copySuccess ? <Check size={18} /> : <Copy size={18} />}
-                  {copySuccess ? "Kopiert" : "Kopieren"}
-                </span>
-              </button>
-            </div>
-
-{imageUrl && (
-  <div className="mb-6 flex justify-center items-center overflow-hidden rounded-xl bg-black/20 p-2">
-    <img
-      src={imageUrl}
-      alt="Illustration"
-      style={{
-        maxHeight: "220px",
-        maxWidth: "320px",
-        width: "auto",
-        objectFit: "contain",
-        display: "block",
-      }}
-    />
-  </div>
-)}
-
-<div className="text-center">
-  {title && (
-    <h2 className="mb-4 text-3xl font-bold text-white">
-      {title}
-    </h2>
-  )}
-
-  <div className="mx-auto max-w-md text-center space-y-4">
-    {displayedStory.split("\n\n").map((paragraph, i) => (
-      <p key={i} className="leading-8 text-center">
-        {paragraph}
-      </p>
-    ))}
-  </div>
-</div>
-
-<div className="story-actions">
-  <button
-    type="button"
-    className="secondary-button story-secondary-button"
-    onClick={generateStory}
-    disabled={loading}
-  >
-    <span className="button-content">
-      <Sparkles size={18} />
-      Weiteres Abenteuer
-    </span>
-  </button>
-</div>
-
-<div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
-  <Moon size={24} />
-</div>
-  </section>
+       {story && (
+  <section className="story-area" aria-live="polite">
+    {isWriting && (
+      <div className="writing-sparkles">
+        ✨ ✨ ✨
+      </div>
     )}
+
+    <div className="story-topbar">
+      <div className="story-stars">
+        <Star size={20} fill="#c084fc" />
+        <Star size={20} fill="#c084fc" />
+        <Star size={20} fill="#c084fc" />
+      </div>
+
+      <button
+        type="button"
+        className="copy-button"
+        onClick={copyStoryToClipboard}
+      >
+        <span className="button-content">
+          {copySuccess ? <Check size={18} /> : <Copy size={18} />}
+          {copySuccess ? "Kopiert" : "Kopieren"}
+        </span>
+      </button>
+    </div>
+
+    <div className="mx-auto flex max-w-md flex-col items-center text-center">
+      {imageUrl && (
+        <div className="mb-6 flex items-center justify-center overflow-hidden rounded-xl bg-black/20 p-2">
+          <img
+            src={imageUrl}
+            alt="Illustration"
+            style={{
+              maxHeight: "220px",
+              maxWidth: "320px",
+              width: "auto",
+              objectFit: "contain",
+              display: "block",
+            }}
+          />
+        </div>
+      )}
+
+      {title && (
+        <h2 className="mb-4 text-3xl font-bold text-white text-center">
+          {title}
+        </h2>
+      )}
+
+      <div className="w-full space-y-4 text-center">
+        {displayedStory.split("\n\n").map((paragraph, i) => (
+          <p key={i} className="leading-8 text-center">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    </div>
+
+    <div className="story-actions">
+      <button
+        type="button"
+        className="secondary-button story-secondary-button"
+        onClick={generateStory}
+        disabled={loading}
+      >
+        <span className="button-content">
+          <Sparkles size={18} />
+          Weiteres Abenteuer
+        </span>
+      </button>
+    </div>
+
+    <div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
+      <Moon size={24} />
+    </div>
+  </section>
+)}
       </div>
     </main>
   );
