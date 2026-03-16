@@ -355,7 +355,7 @@ useEffect(() => {
           </div>
         </form>
 
-     {story && (
+  {story && (
   <section className="story-area" aria-live="polite">
     {isWriting && (
       <div className="writing-sparkles">
