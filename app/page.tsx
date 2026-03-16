@@ -56,30 +56,31 @@ export default function StoryGenerator() {
   }, [trimmedName, trimmedHeld]);
 
   const isFormValid = validationError === "";
-useEffect(() => {
-  if (!story) {
-    setDisplayedStory("");
-    setIsWriting(false);
-    return;
-  }
 
-  let index = 0;
-  setDisplayedStory("");
-  setIsWriting(true);
-
-  const interval = setInterval(() => {
-    index++;
-
-    setDisplayedStory(story.slice(0, index));
-
-    if (index >= story.length) {
-      clearInterval(interval);
+  useEffect(() => {
+    if (!story) {
+      setDisplayedStory("");
       setIsWriting(false);
+      return;
     }
-  }, 18);
 
-  return () => clearInterval(interval);
-}, [story]);
+    let index = 0;
+    setDisplayedStory("");
+    setIsWriting(true);
+
+    const interval = setInterval(() => {
+      index += 1;
+      setDisplayedStory(story.slice(0, index));
+
+      if (index >= story.length) {
+        clearInterval(interval);
+        setIsWriting(false);
+      }
+    }, 18);
+
+    return () => clearInterval(interval);
+  }, [story]);
+
   const applyPromptExample = (example: PromptExample) => {
     if (loading) return;
 
@@ -88,6 +89,11 @@ useEffect(() => {
     setThema(example.thema);
     setError("");
     setStory("");
+    setTitle("");
+    setDisplayedStory("");
+    setIllustrationScene("");
+    setIllustrationPrompt("");
+    setImageUrl("");
     setCopySuccess(false);
     setHasSubmitted(false);
   };
@@ -99,9 +105,15 @@ useEffect(() => {
     setHeld("");
     setThema("Freundschaft");
     setStory("");
+    setTitle("");
+    setDisplayedStory("");
+    setIllustrationScene("");
+    setIllustrationPrompt("");
+    setImageUrl("");
     setError("");
     setCopySuccess(false);
     setHasSubmitted(false);
+    setIsWriting(false);
   };
 
   const copyStoryToClipboard = async () => {
@@ -122,151 +134,167 @@ useEffect(() => {
     }
   };
 
- const generateStory = async () => {
-  setHasSubmitted(true);
+  const generateStory = async () => {
+    setHasSubmitted(true);
 
-  if (loading) return;
+    if (loading) return;
 
-  if (!isFormValid) {
-    setError(validationError);
+    if (!isFormValid) {
+      setError(validationError);
+      setStory("");
+      setDisplayedStory("");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
     setStory("");
+    setTitle("");
     setDisplayedStory("");
-    return;
-  }
+    setIllustrationScene("");
+    setIllustrationPrompt("");
+    setImageUrl("");
+    setCopySuccess(false);
 
-  setLoading(true);
-  setError("");
-  setStory("");
-  setDisplayedStory("");
-  setTitle("");
-  setIllustrationScene("");
-  setIllustrationPrompt("");
-  setImageUrl("");
-  setCopySuccess(false);
-
-  const payload: StoryRequest = {
-    name: trimmedName,
-    held: trimmedHeld,
-    thema,
-  };
- const generateStory = async () => {
-};
-
-const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  void generateStory();
-};
-
-return (
-
-  try {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    let data: StoryResponse = {};
+    const payload: StoryRequest = {
+      name: trimmedName,
+      held: trimmedHeld,
+      thema,
+    };
 
     try {
-   data = (await response.json()) as StoryResponse;
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let data: StoryResponse = {};
+
+      try {
+        data = (await response.json()) as StoryResponse;
+      } catch (err) {
+        throw new Error("Ungültige Serverantwort.");
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP-Fehler: ${response.status}`);
+      }
+
+      if (!data.story || data.story.trim() === "") {
+        throw new Error("Keine Geschichte von der API erhalten.");
+      }
+
+      setTitle(data.title?.trim() || "");
+      setStory(data.story.trim());
+
+      setIllustrationScene(data.illustrationScene || "");
+      setIllustrationPrompt(data.illustrationPrompt || "");
+
+      if (data.illustrationPrompt) {
+        const imageResponse = await fetch("/api/illustration", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: data.illustrationPrompt,
+          }),
+        });
+
+        const imageData = await imageResponse.json();
+
+        if (imageData.imageUrl) {
+          setImageUrl(imageData.imageUrl);
+        }
+      }
     } catch (err) {
-     throw new Error("Ungültige Serverantwort.");
+      console.error("Fehler beim Generieren der Geschichte:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Beim Generieren der Geschichte ist ein Fehler aufgetreten."
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
-    if (!response.ok) {
-      throw new Error(data.error || `HTTP-Fehler: ${response.status}`);
-    }
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void generateStory();
+  };
 
-    if (!data.story || data.story.trim() === "") {
-      throw new Error("Keine Geschichte von der API erhalten.");
-    }
+  return (
+    <main className={isWriting ? "container writing" : "container"}>
+      <div className="starfield" aria-hidden="true">
+        <div className="stars stars-layer-1"></div>
+        <div className="stars stars-layer-2"></div>
+        <div className="stars stars-layer-3"></div>
+      </div>
 
-    setTitle(data.title?.trim() || "");
-    setStory(data.story.trim());
+      <div className="shooting-star star-1" aria-hidden="true" />
+      <div className="shooting-star star-2" aria-hidden="true" />
+      <div className="shooting-star star-3" aria-hidden="true" />
+      <div className="shooting-star star-4" aria-hidden="true" />
 
-    setIllustrationScene(data.illustrationScene || "");
-    setIllustrationPrompt(data.illustrationPrompt || "");
+      <div className="mist-layer" aria-hidden="true"></div>
 
-    console.log("illustrationPrompt:", data.illustrationPrompt);
+      <div className="forest-container" aria-hidden="true">
+        <svg
+          className="forest-svg"
+          viewBox="0 0 1200 200"
+          preserveAspectRatio="none"
+        >
+          <path d="M0,200 L1200,200 L1200,150 L1180,160 L1160,120 L1140,155 L1120,130 L1100,165 L1080,110 L1060,150 L1040,125 L1020,160 L1000,140 L980,170 L960,115 L940,155 L920,135 L900,170 L880,120 L860,155 L840,130 L820,165 L800,145 L780,175 L760,110 L740,160 L720,130 L700,170 L680,140 L660,175 L640,115 L620,160 L600,135 L580,175 L560,120 L540,165 L520,135 L500,175 L480,145 L460,180 L440,110 L420,160 L400,135 L380,175 L360,140 L340,180 L320,115 L300,165 L280,130 L260,175 L240,145 L220,185 L200,110 L180,165 L160,135 L140,180 L120,145 L100,185 L80,120 L60,170 L40,140 L20,180 L0,150 Z" />
+        </svg>
+      </div>
 
-    const imageResponse = await fetch("/api/illustration", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: data.illustrationPrompt,
-      }),
-    });
+      <div className="magic-card">
+        <header className="magic-header">
+          <h1>Magischer Geschichten-Erzähler</h1>
+          <p>Erschaffe dein eigenes Abenteuer in Sekunden</p>
+        </header>
 
-    console.log(
-      "imageResponse.ok:",
-      imageResponse.ok,
-      "status:",
-      imageResponse.status
-    );
+        {!story && !loading && (
+          <p className="magic-hint">
+            🪄 Die Magie wartet auf deinen ersten Helden...
+          </p>
+        )}
 
-    const imageData = await imageResponse.json();
-    console.log("imageData:", imageData);
+        {trimmedName && !story && !loading && (
+          <p className="magic-preview">
+            ✨ Heute Abend erlebt {trimmedName} ein magisches Abenteuer...
+          </p>
+        )}
 
-    if (imageData.imageUrl) {
-      setImageUrl(imageData.imageUrl);
-    }
-  } catch (err) {
-    console.error("Fehler beim Generieren der Geschichte:", err);
-    setError(
-      err instanceof Error
-        ? err.message
-        : "Beim Generieren der Geschichte ist ein Fehler aufgetreten."
-    );
-<div className="mx-auto flex max-w-md flex-col items-center text-center">
-  {imageUrl && (
-    <div className="mb-6 flex justify-center items-center overflow-hidden rounded-xl bg-black/20 p-2">
-      <img
-        src={imageUrl}
-        alt="Illustration"
-        style={{
-          maxHeight: "220px",
-          maxWidth: "320px",
-          width: "auto",
-          objectFit: "contain",
-          display: "block",
-        }}
-      />
-    </div>
-  )}
+        <section
+          className="prompt-examples"
+          aria-labelledby="prompt-examples-title"
+        >
+          <h2 id="prompt-examples-title">Beispiel-Prompts</h2>
 
-  {title && (
-    <h2 className="mb-4 text-3xl font-bold text-white text-center">
-      {title}
-    </h2>
-  )}
-
-  <div className="w-full space-y-4 text-center">
-    {displayedStory.split("\n\n").map((paragraph, i) => (
-      <p key={i} className="leading-8 text-center">
-        {paragraph}
-      </p>
-    ))}
-  </div>
-</div>
-
-<div className="story-actions">
-  <button
-    type="button"
-    className="secondary-button story-secondary-button"
-    onClick={generateStory}
-    disabled={loading}
-  >
-    <span className="button-content">
-      <Sparkles size={18} />
-      Weiteres Abenteuer
-    </span>
-  </button>
-</div>
+          <div className="prompt-chip-list">
+            {PROMPT_EXAMPLES.map((example) => (
+              <button
+                key={example.label}
+                type="button"
+                className="prompt-chip"
+                onClick={() => applyPromptExample(example)}
+                disabled={loading}
+              >
+                <span className="prompt-chip-icon" aria-hidden="true">
+                  {example.label === "Mutiger Drache" && "✨"}
+                  {example.label === "Freundschaft im Wald" && "🌲"}
+                  {example.label === "Weltraumreise" && "🚀"}
+                  {example.label === "Zauber der Meere" && "🌊"}
+                </span>
+                {example.label}
+              </button>
+            ))}
+          </div>
         </section>
 
         <form className="form-group" onSubmit={handleSubmit} noValidate>
@@ -280,7 +308,9 @@ return (
               onChange={(e) => setName(e.target.value)}
               autoComplete="given-name"
               maxLength={MAX_NAME_LENGTH}
-              aria-invalid={Boolean(hasSubmitted && validationError && !trimmedName)}
+              aria-invalid={Boolean(
+                hasSubmitted && validationError && !trimmedName
+              )}
             />
             <small className="input-hint">
               {trimmedName.length}/{MAX_NAME_LENGTH}
@@ -296,7 +326,9 @@ return (
               value={held}
               onChange={(e) => setHeld(e.target.value)}
               maxLength={MAX_HELD_LENGTH}
-              aria-invalid={Boolean(hasSubmitted && validationError && !trimmedHeld)}
+              aria-invalid={Boolean(
+                hasSubmitted && validationError && !trimmedHeld
+              )}
             />
             <small className="input-hint">
               {trimmedHeld.length}/{MAX_HELD_LENGTH}
@@ -304,7 +336,9 @@ return (
           </div>
 
           <div className="field-group">
-            <label htmlFor="story-theme">Wovon soll die Geschichte handeln?</label>
+            <label htmlFor="story-theme">
+              Wovon soll die Geschichte handeln?
+            </label>
             <select
               id="story-theme"
               value={thema}
@@ -364,84 +398,80 @@ return (
           </div>
         </form>
 
-  {story && (
-  <section className="story-area" aria-live="polite">
-    {isWriting && (
-      <div className="writing-sparkles">
-        ✨ ✨ ✨
-      </div>
-    )}
+        {story && (
+          <section className="story-area" aria-live="polite">
+            {isWriting && <div className="writing-sparkles">✨ ✨ ✨</div>}
 
-    <div className="story-topbar">
-      <div className="story-stars">
-        <Star size={20} fill="#c084fc" />
-        <Star size={20} fill="#c084fc" />
-        <Star size={20} fill="#c084fc" />
-      </div>
+            <div className="story-topbar">
+              <div className="story-stars">
+                <Star size={20} fill="#c084fc" />
+                <Star size={20} fill="#c084fc" />
+                <Star size={20} fill="#c084fc" />
+              </div>
 
-      <button
-        type="button"
-        className="copy-button"
-        onClick={copyStoryToClipboard}
-      >
-        <span className="button-content">
-          {copySuccess ? <Check size={18} /> : <Copy size={18} />}
-          {copySuccess ? "Kopiert" : "Kopieren"}
-        </span>
-      </button>
-    </div>
+              <button
+                type="button"
+                className="copy-button"
+                onClick={copyStoryToClipboard}
+              >
+                <span className="button-content">
+                  {copySuccess ? <Check size={18} /> : <Copy size={18} />}
+                  {copySuccess ? "Kopiert" : "Kopieren"}
+                </span>
+              </button>
+            </div>
 
-    <div className="mx-auto flex max-w-md flex-col items-center text-center">
-      {imageUrl && (
-        <div className="mb-6 flex items-center justify-center overflow-hidden rounded-xl bg-black/20 p-2">
-          <img
-            src={imageUrl}
-            alt="Illustration"
-            style={{
-              maxHeight: "220px",
-              maxWidth: "320px",
-              width: "auto",
-              objectFit: "contain",
-              display: "block",
-            }}
-          />
-        </div>
-      )}
+            <div className="mx-auto flex max-w-md flex-col items-center text-center">
+              {imageUrl && (
+                <div className="mb-6 flex items-center justify-center overflow-hidden rounded-xl bg-black/20 p-2">
+                  <img
+                    src={imageUrl}
+                    alt={illustrationScene || "Illustration"}
+                    style={{
+                      maxHeight: "220px",
+                      maxWidth: "320px",
+                      width: "auto",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
+                  />
+                </div>
+              )}
 
-      {title && (
-        <h2 className="mb-4 text-3xl font-bold text-white text-center">
-          {title}
-        </h2>
-      )}
+              {title && (
+                <h2 className="mb-4 text-3xl font-bold text-white text-center">
+                  {title}
+                </h2>
+              )}
 
-      <div className="w-full space-y-4 text-center">
-        {displayedStory.split("\n\n").map((paragraph, i) => (
-          <p key={i} className="leading-8 text-center">
-            {paragraph}
-          </p>
-        ))}
-      </div>
-    </div>
+              <div className="w-full space-y-4 text-center">
+                {displayedStory.split("\n\n").map((paragraph, i) => (
+                  <p key={i} className="leading-8 text-center">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
 
-    <div className="story-actions">
-      <button
-        type="button"
-        className="secondary-button story-secondary-button"
-        onClick={generateStory}
-        disabled={loading}
-      >
-        <span className="button-content">
-          <Sparkles size={18} />
-          Weiteres Abenteuer
-        </span>
-      </button>
-    </div>
+            <div className="story-actions">
+              <button
+                type="button"
+                className="secondary-button story-secondary-button"
+                onClick={() => void generateStory()}
+                disabled={loading}
+              >
+                <span className="button-content">
+                  <Sparkles size={18} />
+                  Weiteres Abenteuer
+                </span>
+              </button>
+            </div>
 
-    <div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
-      <Moon size={24} />
-    </div>
-  </section>
-)}
+            <div className={`story-moon ${isWriting ? "moon-glow" : ""}`}>
+              <Moon size={24} />
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );
