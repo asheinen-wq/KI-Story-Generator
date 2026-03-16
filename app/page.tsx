@@ -149,6 +149,15 @@ useEffect(() => {
     held: trimmedHeld,
     thema,
   };
+ const generateStory = async () => {
+};
+
+const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  void generateStory();
+};
+
+return (
 
   try {
     const response = await fetch("/api/chat", {
